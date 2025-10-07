@@ -1,11 +1,189 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📚 Sistema de Agenda Escolar
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema de gestión escolar moderno desarrollado con Laravel, que incluye gestión de tareas, eventos, calendario y pagos de colegiatura con un diseño UI/UX contemporáneo.
+
+## ✨ Características Principales
+
+### 📝 Gestión de Tareas
+- Crear, editar y eliminar tareas
+- Asignación de prioridades y fechas de vencimiento
+- Exportación a PDF y Excel
+- Filtrado y búsqueda avanzada
+
+### 📅 Sistema de Calendario
+- Vista de calendario interactiva con FullCalendar
+- Gestión de eventos y citas
+- Vista mensual, semanal y diaria
+- Integración con tareas y pagos
+
+### 🎉 Gestión de Eventos
+- Creación y administración de eventos escolares
+- Eventos recurrentes
+- Notificaciones automáticas
+- Exportación de reportes
+
+### 💳 Sistema de Pagos
+- Gestión de colegiaturas y pagos escolares
+- Múltiples métodos de pago
+- Generación de comprobantes
+- Reportes financieros
+
+### 🎨 Diseño Moderno
+- Interface con efectos glass y gradientes
+- Modo oscuro/claro
+- Responsive design
+- Animaciones y transiciones suaves
+
+## 🛠️ Tecnologías Utilizadas
+
+- **Backend**: Laravel 11
+- **Frontend**: Blade Templates + Vue.js
+- **Styling**: CSS3 con efectos modernos, Bootstrap 5
+- **Base de datos**: SQLite/MySQL
+- **Calendar**: FullCalendar v5.11.5
+- **Exportación**: Laravel Excel, DomPDF
+- **Icons**: FontAwesome
+
+## 📋 Requisitos del Sistema
+
+- PHP >= 8.1
+- Composer
+- Node.js & NPM
+- SQLite o MySQL
+
+## 🚀 Instalación
+
+1. **Clonar el repositorio**
+```bash
+git clone https://github.com/Pachecosaurio/agenda-escolar.git
+cd agenda-escolar
+```
+
+2. **Instalar dependencias de PHP**
+```bash
+composer install
+```
+
+3. **Instalar dependencias de Node.js**
+```bash
+npm install
+```
+
+4. **Configurar el archivo de entorno**
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+5. **Configurar la base de datos**
+Editar `.env` con los datos de tu base de datos
+
+6. **Ejecutar migraciones**
+```bash
+php artisan migrate
+```
+
+7. **Compilar assets**
+```bash
+npm run dev
+# o para producción
+npm run build
+```
+
+8. **Iniciar el servidor**
+```bash
+php artisan serve
+```
+
+## 📁 Estructura del Proyecto
+
+```
+agenda_escolar/
+├── app/
+│   ├── Http/Controllers/     # Controladores
+│   ├── Models/              # Modelos Eloquent
+│   ├── Exports/             # Clases para exportación
+│   └── Policies/            # Políticas de autorización
+├── resources/
+│   ├── views/               # Templates Blade
+│   ├── css/                 # Estilos CSS
+│   └── js/                  # JavaScript/Vue.js
+├── database/
+│   ├── migrations/          # Migraciones de BD
+│   └── seeders/            # Seeders
+└── public/
+    ├── css/                # CSS compilado
+    └── js/                 # JavaScript compilado
+```
+
+## 🎯 Funcionalidades Destacadas
+
+### Sistema de Exportación
+- PDF con diseño profesional
+- Excel con formato avanzado
+- Reportes personalizables
+
+### Interface de Usuario
+- Efectos glass con `backdrop-filter`
+- Gradientes CSS modernos
+- Animaciones fluidas
+- Sistema de notificaciones
+
+### Seguridad
+- Autenticación Laravel
+- Políticas de autorización
+- Validación de formularios
+- Protección CSRF
+
+## 🔧 Configuración Avanzada
+
+### Variables CSS Personalizadas
+El sistema utiliza variables CSS para fácil personalización:
+
+```css
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+```
+
+### Configuración del Calendario
+FullCalendar configurado con:
+- Vista responsive
+- Eventos dinámicos
+- Integración con base de datos
+- Soporte para múltiples idiomas
+
+## 🤝 Contribución
+
+1. Fork el proyecto
+2. Crea una rama feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
+
+## 👨‍💻 Autor
+
+**Pachecosaurio**
+- GitHub: [@Pachecosaurio](https://github.com/Pachecosaurio)
+- Email: Jafetpd.md24@universidadupp.edu.mx
+
+## 🙏 Agradecimientos
+
+- Laravel Framework
+- FullCalendar.io
+- Bootstrap Team
+- FontAwesome
+- Comunidad de desarrolladores
+
+---
+
+⭐ **¡Si te gusta este proyecto, dale una estrella!** ⭐
 
 ## About Laravel
 
