@@ -1,3 +1,19 @@
+/**
+ * Scripts del Calendario (FullCalendar v5)
+ *
+ * Propósito:
+ * - Inicializa el calendario y define fuentes de eventos (eventos y pagos).
+ * - Gestiona loader/progreso, filtros instantáneos y estadísticas visibles.
+ * - Persiste preferencias (vista, fecha, filtros) en localStorage.
+ * - Expone helpers globales para integrarlos desde Blade.
+ *
+ * API global expuesta (window):
+ * - changeCalendarView(view: string): cambia la vista (dayGridMonth, timeGridWeek, ...)
+ * - toggleEventSource(): aplica visibilidad según filtros activos
+ * - showEventDetails(event: EventApi): abre modal con detalles
+ * - refreshCalendar(): solicita refetch de eventos
+ * - forceReloadCalendar(): recarga forzada con feedback visual
+ */
 // Scripts específicos del calendario - FullCalendar v5
 let calendar;
 const LS_KEY = 'calendarPreferences_v1';
@@ -72,6 +88,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 100);
 });
 
+/**
+ * Inicializa FullCalendar sobre el elemento #calendar.
+ * - Evita inicializaciones múltiples.
+ * - Configura eventSources, feedback de carga y handlers de UI.
+ */
 function initCalendar() {
     // Evitar inicialización múltiple
     if (calendar) {
@@ -214,6 +235,11 @@ function initCalendar() {
 }
 
 // Loader helpers
+/**
+ * Muestra/oculta overlay de carga del calendario.
+ * @param {boolean} state - true para mostrar, false para ocultar
+ * @param {string} detail - texto descriptivo opcional
+ */
 function setCalendarLoading(state, detail){
     const overlay = document.getElementById('calendarLoadingOverlay');
     const detailEl = document.getElementById('calendarLoadingDetail');
@@ -276,6 +302,10 @@ function setCalendarError(msg){
     updateProgressBar(100,'Error');
 }
 
+/**
+ * Cambia la vista del calendario y actualiza estilos activos de botones.
+ * @param {string} view - Identificador de vista de FullCalendar
+ */
 function changeCalendarView(view) {
     if (!calendar) return;
     
@@ -296,6 +326,10 @@ function changeCalendarView(view) {
     saveCurrentPrefs();
 }
 
+/**
+ * Aplica filtros de visibilidad a los eventos ya renderizados y
+ * guarda preferencias actuales en localStorage.
+ */
 function toggleEventSource() {
     if (!calendar) return;
     const prefs = loadPreferences();
@@ -323,6 +357,7 @@ function toggleEventSource() {
     logCalendarDebug('filters applied', { showEvents, showTasks, showPayments });
 }
 
+/** Guarda vista/fecha actuales del calendario en localStorage. */
 function saveCurrentPrefs(){
     if(!calendar) return;
     const prefs = loadPreferences();
@@ -331,6 +366,7 @@ function saveCurrentPrefs(){
     savePreferences(prefs);
 }
 
+/** Restaura filtros, vista y fecha desde localStorage tras render. */
 function restorePreferences(){
     const prefs = loadPreferences();
     if(Object.keys(prefs).length===0) return;
@@ -353,6 +389,10 @@ function restorePreferences(){
     }, 350);
 }
 
+/**
+ * Abre un modal Bootstrap con detalles básicos del evento.
+ * @param {import('@fullcalendar/core').EventApi} event
+ */
 function showEventDetails(event) {
     const modal = document.getElementById('eventModal');
     if (!modal) return;
@@ -366,6 +406,10 @@ function showEventDetails(event) {
     bsModal.show();
 }
 
+/**
+ * Calcula y pinta contadores visibles (Eventos, Tareas, Pagos y vencidos)
+ * según los filtros activos y el rango visible.
+ */
 function updateStats() {
     if(!calendar){ return; }
     const fShowEvents = document.getElementById('showEvents')?.checked ?? true;
@@ -435,6 +479,9 @@ function animateButtons() {
     });
 }
 
+/**
+ * Dispara un refetch de eventos con feedback visual.
+ */
 function refreshCalendar(){
     if(!calendar){ console.warn('refreshCalendar() llamado antes de inicializar el calendario'); return; }
     try {
@@ -448,6 +495,9 @@ function refreshCalendar(){
 }
 
 // Recarga forzada que además reaplica filtros actuales sin perder estado
+/**
+ * Recarga forzada del calendario y reaplica filtros sin perder estado.
+ */
 function forceReloadCalendar(){
     if(!calendar){ return; }
     const statusEl = document.getElementById('forceReloadStatus');

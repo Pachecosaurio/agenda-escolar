@@ -1,3 +1,4 @@
+{{-- Layout principal de la aplicación: navbar, estilos globales, notificaciones y carga de FullCalendar con fallback. --}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>

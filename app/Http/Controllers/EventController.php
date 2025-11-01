@@ -1,4 +1,14 @@
 <?php
+/**
+ * Controlador de Eventos
+ *
+ * Responsabilidades:
+ * - CRUD de eventos del usuario autenticado.
+ * - Listados excluyendo ocurrencias generadas (parent_event_id no nulo).
+ * - API para FullCalendar (apiEvents) que expande recurrencias on-the-fly
+ *   dentro del rango solicitado sin materializar registros hijos en BD.
+ * - Incluye tareas en el rango para mostrarlas en el calendario.
+ */
 
 namespace App\Http\Controllers;
 

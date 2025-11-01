@@ -1,4 +1,11 @@
 <?php
+/**
+ * Modelo Event
+ *
+ * Representa eventos del calendario. Soporta recurrencia sin materialización de
+ * hijos (parent_event_id) y provee occurrencesBetween($rangeStart, $rangeEnd)
+ * para expandir ocurrencias en memoria dentro de un rango dado.
+ */
 
 namespace App\Models;
 

@@ -1,9 +1,18 @@
 <?php
+/**
+ * Controlador de Tareas
+ *
+ * Responsabilidades:
+ * - CRUD de tareas del usuario autenticado.
+ * - Búsqueda por título y filtrado por fecha de vencimiento.
+ * - Soporta adjuntos almacenados en storage/public/attachments.
+ */
 
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Task;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TaskController extends Controller
@@ -12,7 +21,7 @@ class TaskController extends Controller
 
     public function index(Request $request)
     {
-        $query = Task::where('user_id', auth()->id());
+    $query = Task::where('user_id', Auth::id());
         if ($request->filled('search')) {
             $query->where('title', 'like', '%' . $request->search . '%');
         }
@@ -51,7 +60,7 @@ class TaskController extends Controller
         Task::create([
             'title' => $request->title,
             'description' => $request->description,
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'due_date' => $request->due_date,
             'attachment' => $attachmentPath,
             'completed' => $request->has('completed'),

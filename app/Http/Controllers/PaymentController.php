@@ -1,4 +1,13 @@
 <?php
+/**
+ * Controlador de Pagos
+ *
+ * Responsabilidades:
+ * - Listado con filtros, estadísticas y paginación.
+ * - CRUD de pagos por usuario con políticas de autorización.
+ * - Normaliza estados: pending→overdue si vence; paid si hay paid_date.
+ * - Endpoint JSON para mostrar pagos como eventos en el calendario.
+ */
 
 namespace App\Http\Controllers;
 

@@ -1,4 +1,11 @@
 <?php
+/**
+ * Home/Dashboard Controller
+ *
+ * / (home): página de bienvenida pública.
+ * /home (home.dashboard): dashboard con estadísticas rápidas para usuarios autenticados.
+ * Maneja una experiencia simple y robusta: ante errores en estadísticas, cae a la vista home.
+ */
 
 namespace App\Http\Controllers;
 
@@ -6,6 +13,7 @@ use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Models\Event;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -36,11 +44,11 @@ class HomeController extends Controller
      */
     public function dashboard()
     {
-        if (!auth()->check()) {
+        if (!Auth::check()) {
             return redirect()->route('login');
         }
         
-        $user = auth()->user();
+        $user = Auth::user();
         
         try {
             // Obtener tareas próximas a vencer (próximos 7 días)

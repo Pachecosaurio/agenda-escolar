@@ -1,4 +1,11 @@
 <?php
+/**
+ * Modelo Payment
+ *
+ * Pagos escolares con estados (pending, paid, overdue), categorías y scopes
+ * para filtrado/búsqueda. Provee atributos de presentación (status_text,
+ * status_color, category_text) y se integra con el calendario vía controlador.
+ */
 
 namespace App\Models;
 

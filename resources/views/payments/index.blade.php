@@ -1,3 +1,4 @@
+{{-- Vista de Pagos: hero con estadísticas, filtros, categorías y tabla principal. Tema morado con glass y accesibilidad mejorada. --}}
 @extends('layouts.app')
 
 @push('styles')
