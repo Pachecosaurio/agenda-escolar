@@ -1,393 +1,118 @@
 @extends('layouts.app')
 
-@section('content')
+@push('styles')
 <style>
-    /* CSS Variables - Consistente con calendario */
-    :root {
-        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-        --glass-bg: rgba(255, 255, 255, 0.25);
-        --glass-border: rgba(255, 255, 255, 0.18);
-        --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.2);
-        --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.3);
-        --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        --border-radius: 20px;
-    }
+    body { background:#f4f6fb; }
+    .page-wrapper-bg { background:linear-gradient(180deg,#f4f6fb 0%,#eef2f9 100%); min-height:100%; }
 
-    /* Hero Section */
-    .hero-section {
-        background: var(--primary-gradient);
-        min-height: 100vh;
-        position: relative;
-        overflow: hidden;
-        padding: 0;
-    }
+    .payment-show-hero { background: linear-gradient(135deg,#667eea 0%,#764ba2 50%,#a855f7 100%); position:relative; overflow:hidden; border-bottom:6px solid rgba(255,255,255,0.3); }
+    .payment-show-hero .floating-circle { position:absolute; border-radius:50%; background:rgba(255,255,255,0.12); animation: floatShow 21s linear infinite; }
+    .payment-show-hero .floating-circle:nth-child(1){ width:120px; height:120px; left:9%; animation-delay:0s; }
+    .payment-show-hero .floating-circle:nth-child(2){ width:170px; height:170px; left:77%; animation-delay:5s; }
+    .payment-show-hero .floating-circle:nth-child(3){ width:95px; height:95px; left:48%; animation-delay:10s; }
+    @keyframes floatShow { 0%{ transform:translateY(90vh) rotate(0deg); opacity:0;} 10%{opacity:1;} 90%{opacity:1;} 100%{ transform:translateY(-120px) rotate(360deg); opacity:0;} }
 
-    .hero-content {
-        position: relative;
-        z-index: 10;
-        padding: 2rem 0;
-    }
+    .show-glass-card { background:linear-gradient(135deg,rgba(255,255,255,0.16),rgba(255,255,255,0.06)); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.32); border-radius:28px; position:relative; overflow:hidden; }
+    .show-glass-card:before { content:""; position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(90deg,#667eea,#764ba2,#a855f7,#667eea); background-size:300% 100%; animation:gradientShift 6s ease infinite; }
+    @keyframes gradientShift {0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
 
-    /* Floating Elements */
-    .floating-elements {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 1;
-    }
-
-    .floating-circle {
-        position: absolute;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        animation: float 6s ease-in-out infinite;
-    }
-
-    .floating-circle:nth-child(1) {
-        width: 120px;
-        height: 120px;
-        top: 15%;
-        left: 8%;
-        animation-delay: 0s;
-    }
-
-    .floating-circle:nth-child(2) {
-        width: 200px;
-        height: 200px;
-        top: 50%;
-        right: 10%;
-        animation-delay: 2s;
-    }
-
-    .floating-circle:nth-child(3) {
-        width: 90px;
-        height: 90px;
-        bottom: 25%;
-        left: 25%;
-        animation-delay: 4s;
-    }
-
-    @keyframes float {
-        0%, 100% { transform: translateY(0px) rotate(0deg); }
-        50% { transform: translateY(-20px) rotate(180deg); }
-    }
-
-    /* Payment Details Card */
-    .payment-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(20px);
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow-xl);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        overflow: hidden;
-        transition: var(--transition-smooth);
-    }
-
-    .payment-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
-    }
-
-    .payment-header {
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.85) 0%, rgba(118, 75, 162, 0.9) 100%);
-        backdrop-filter: blur(20px);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        color: white;
-        padding: 2rem;
-        text-align: center;
-        position: relative;
-    }
-
-    .payment-header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(45deg, #667eea, #764ba2, #667eea);
-        background-size: 200% 100%;
-        animation: gradient-shift 3s ease infinite;
-    }
-
-    @keyframes gradient-shift {
-        0%, 100% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-    }
-
-    .payment-header h2 {
-        margin: 0;
-        font-size: 2rem;
-        font-weight: 700;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        color: white;
-    }
-
-    .payment-header p {
-        color: white;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    }
-
-    .payment-content {
-        padding: 2.5rem;
-    }
-
-    .payment-info {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 2rem;
-        margin-bottom: 2rem;
-    }
-
-    .info-item {
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 15px;
-        padding: 1.5rem;
-        box-shadow: var(--shadow-sm);
-        transition: var(--transition-smooth);
-    }
-
-    .info-item:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
-    }
-
-    .info-label {
-        font-weight: 600;
-        color: #5a5c69;
-        margin-bottom: 0.5rem;
-        display: flex;
-        align-items: center;
-    }
-
-    .info-label i {
-        margin-right: 0.5rem;
-        color: #667eea;
-    }
-
-    .info-value {
-        font-size: 1.1rem;
-        color: #2c3e50;
-    }
-
-    .status-badge {
-        display: inline-block;
-        padding: 0.5rem 1rem;
-        border-radius: 25px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-size: 0.8rem;
-    }
-
-    .status-pending {
-        background: var(--warning-gradient);
-        color: white;
-    }
-
-    .status-paid {
-        background: var(--success-gradient);
-        color: white;
-    }
-
-    .status-overdue {
-        background: var(--secondary-gradient);
-        color: white;
-    }
-
-    .action-buttons {
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    .action-button {
-        position: relative;
-        overflow: hidden;
-        transition: var(--transition-smooth);
-        border: none;
-        border-radius: 25px;
-        padding: 1rem 2rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        min-width: 150px;
-        justify-content: center;
-    }
-
-    .action-button:hover {
-        transform: translateY(-5px) scale(1.05);
-        text-decoration: none;
-    }
-
-    .btn-edit {
-        background: var(--success-gradient);
-        color: white;
-    }
-
-    .btn-back {
-        background: rgba(108, 117, 125, 0.1);
-        color: #6c757d;
-        border: 2px solid #6c757d;
-    }
-
-    .btn-delete {
-        background: var(--secondary-gradient);
-        color: white;
-    }
+    .glass-mini-box { background:rgba(255,255,255,0.14); border:1px solid rgba(255,255,255,0.35); border-radius:14px; padding:1rem .95rem; }
+    .glass-mini-box h6 { font-size:.7rem; letter-spacing:.5px; font-weight:600; text-transform:uppercase; }
+    .notes-box { background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.35); border-radius:14px; padding:1rem 1rem; }
+    .action-btn-gradient { background:linear-gradient(90deg,#667eea,#764ba2,#a855f7); border:none; color:#fff; font-weight:600; letter-spacing:.5px; box-shadow:0 8px 24px -6px rgba(103,65,148,.45); }
+    .action-btn-gradient:hover { transform:translateY(-3px); box-shadow:0 14px 30px -4px rgba(103,65,148,.55); color:#fff; }
+    .btn-outline-lite { background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.4); }
+    .btn-outline-lite:hover { background:rgba(255,255,255,0.25); color:#fff; }
 </style>
+@endpush
 
-<div class="hero-section">
-    <!-- Floating Elements -->
+@section('content')
+<div class="page-wrapper-bg">
+<div class="payment-show-hero py-5">
     <div class="floating-elements">
         <div class="floating-circle"></div>
         <div class="floating-circle"></div>
         <div class="floating-circle"></div>
     </div>
-
-    <div class="hero-content">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="payment-card">
-                        <div class="payment-header">
-                            <div class="icon-wrapper mb-3">
-                                <i class="fas fa-receipt" style="font-size: 3rem;"></i>
-                            </div>
-                            <h2>{{ $payment->title }}</h2>
-                            <p class="mb-0" style="opacity: 0.9;">Detalles del Pago</p>
+    <div class="container hero-content py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="show-glass-card p-4 p-md-5 mb-4">
+                    <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
+                        <div>
+                            <h2 class="text-white mb-1">{{ $payment->title }}</h2>
+                            <p class="text-white-50 mb-0">Detalle del pago</p>
                         </div>
-
-                        <div class="payment-content">
-                            <div class="payment-info">
-                                <div class="info-item">
-                                    <div class="info-label">
-                                        <i class="fas fa-dollar-sign"></i> Monto
-                                    </div>
-                                    <div class="info-value">
-                                        ${{ number_format($payment->amount, 2) }}
-                                    </div>
-                                </div>
-
-                                <div class="info-item">
-                                    <div class="info-label">
-                                        <i class="fas fa-flag"></i> Estado
-                                    </div>
-                                    <div class="info-value">
-                                        <span class="status-badge status-{{ $payment->status }}">
-                                            {{ $payment->status_text }}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div class="info-item">
-                                    <div class="info-label">
-                                        <i class="fas fa-tags"></i> Categoría
-                                    </div>
-                                    <div class="info-value">
-                                        {{ $payment->category_text }}
-                                    </div>
-                                </div>
-
-                                <div class="info-item">
-                                    <div class="info-label">
-                                        <i class="fas fa-calendar-alt"></i> Fecha Límite
-                                    </div>
-                                    <div class="info-value">
-                                        {{ $payment->due_date->format('d/m/Y') }}
-                                    </div>
-                                </div>
-
-                                @if($payment->paid_date)
-                                <div class="info-item">
-                                    <div class="info-label">
-                                        <i class="fas fa-calendar-check"></i> Fecha de Pago
-                                    </div>
-                                    <div class="info-value">
-                                        {{ $payment->paid_date->format('d/m/Y') }}
-                                    </div>
-                                </div>
-                                @endif
-
-                                @if($payment->payment_method)
-                                <div class="info-item">
-                                    <div class="info-label">
-                                        <i class="fas fa-credit-card"></i> Método de Pago
-                                    </div>
-                                    <div class="info-value">
-                                        {{ $payment->payment_method }}
-                                    </div>
-                                </div>
-                                @endif
-
-                                @if($payment->reference)
-                                <div class="info-item">
-                                    <div class="info-label">
-                                        <i class="fas fa-hashtag"></i> Referencia
-                                    </div>
-                                    <div class="info-value">
-                                        {{ $payment->reference }}
-                                    </div>
-                                </div>
-                                @endif
-                            </div>
-
-                            @if($payment->description)
-                            <div class="info-item">
-                                <div class="info-label">
-                                    <i class="fas fa-align-left"></i> Descripción
-                                </div>
-                                <div class="info-value">
-                                    {{ $payment->description }}
-                                </div>
-                            </div>
-                            @endif
-
-                            @if($payment->notes)
-                            <div class="info-item mt-3">
-                                <div class="info-label">
-                                    <i class="fas fa-sticky-note"></i> Notas
-                                </div>
-                                <div class="info-value">
-                                    {{ $payment->notes }}
-                                </div>
-                            </div>
-                            @endif
-
-                            <div class="action-buttons mt-4">
-                                <a href="{{ route('payments.index') }}" class="action-button btn-back">
-                                    <i class="fas fa-arrow-left me-2"></i> Volver
-                                </a>
-                                <a href="{{ route('payments.edit', $payment) }}" class="action-button btn-edit">
-                                    <i class="fas fa-edit me-2"></i> Editar
-                                </a>
-                                <form action="{{ route('payments.destroy', $payment) }}" method="POST" style="display: inline;" 
-                                      onsubmit="return confirm('¿Estás seguro de eliminar este pago?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="action-button btn-delete">
-                                        <i class="fas fa-trash me-2"></i> Eliminar
-                                    </button>
-                                </form>
+                        <x-payment.status-badge :status="$payment->status" />
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="glass-mini-box h-100">
+                                <h6 class="text-white-50 mb-1">Monto</h6>
+                                <h4 class="text-white mb-0" style="font-size:1.4rem;">${{ number_format($payment->amount,2) }}</h4>
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="glass-mini-box h-100">
+                                <h6 class="text-white-50 mb-1">Vence</h6>
+                                <span class="text-white">{{ $payment->due_date?->format('d/m/Y') }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="glass-mini-box h-100">
+                                <h6 class="text-white-50 mb-1">Categoría</h6>
+                                <span class="text-white">{{ $payment->category_text }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="glass-mini-box h-100">
+                                <h6 class="text-white-50 mb-1">Pagado el</h6>
+                                <span class="text-white">{{ $payment->paid_date?->format('d/m/Y') ?? '-' }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="glass-mini-box h-100">
+                                <h6 class="text-white-50 mb-1">Método</h6>
+                                <span class="text-white">{{ $payment->payment_method ? ucfirst($payment->payment_method) : '-' }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="glass-mini-box h-100">
+                                <h6 class="text-white-50 mb-1">Referencia</h6>
+                                <span class="text-white">{{ $payment->reference ?? '-' }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="glass-mini-box h-100">
+                                <h6 class="text-white-50 mb-1">Creado</h6>
+                                <span class="text-white">{{ $payment->created_at->format('d/m/Y H:i') }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="glass-mini-box h-100">
+                                <h6 class="text-white-50 mb-1">Actualizado</h6>
+                                <span class="text-white">{{ $payment->updated_at->format('d/m/Y H:i') }}</span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="notes-box">
+                                <h6 class="text-white-50 mb-2">Notas</h6>
+                                <p class="text-white-50 mb-0">{{ $payment->notes ?: 'Sin notas adicionales.' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{{ route('payments.edit',$payment) }}" class="btn action-btn-gradient"><i class="fas fa-edit me-1"></i> Editar</a>
+                        <a href="{{ route('payments.index') }}" class="btn btn-outline-lite"><i class="fas fa-arrow-left me-1"></i> Volver</a>
+                        <form action="{{ route('payments.destroy',$payment) }}" method="POST" onsubmit="return confirm('¿Eliminar pago?');">
+                            @csrf @method('DELETE')
+                            <button class="btn btn-outline-lite" style="border-color:rgba(220,53,69,0.55);background:rgba(220,53,69,0.25);"><i class="fas fa-trash me-1"></i>Eliminar</button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

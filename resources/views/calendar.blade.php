@@ -214,18 +214,36 @@
         backdrop-filter: blur(20px);
         border: 1px solid rgba(255, 255, 255, 0.2);
     }
+    .filter-card.enhanced { border:1px solid #e2e8f0; background:rgba(255,255,255,0.9); box-shadow:0 10px 30px -8px rgba(15,23,42,0.25) !important; }
+    .filter-card.enhanced .filter-toggle { background:rgba(255,255,255,0.65); transition:all .25s ease; }
+    .filter-card.enhanced .filter-toggle:hover { background:#ffffff; transform:translateX(4px); box-shadow:0 4px 14px -4px rgba(0,0,0,0.15); }
+    .filter-card.enhanced input.form-check-input { cursor:pointer; }
+    .filter-card.enhanced .badge { letter-spacing:.5px; }
+    .filter-card.enhanced hr { border-top:1px solid rgba(0,0,0,0.08); }
+    .filter-card.enhanced .btn-outline-primary.btn-sm.active { background:linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; border-color:#6366f1; box-shadow:0 4px 12px -2px rgba(99,102,241,.55); }
+    .filter-card.enhanced .btn-outline-primary.btn-sm { transition:all .25s ease; }
+    .filter-card.enhanced .btn-outline-primary.btn-sm:hover { transform:translateY(-2px); }
+    /* Export panel */
+    /* Export panel (migrated to modal) styles removed */
+    .export-panel .list-group-item { border:1px solid #eef2f7; margin-bottom:6px; font-weight:500; display:flex; align-items:center; }
+    .export-panel .list-group-item:hover { background:#f8fafc; border-color:#e2e8f0; }
+    .export-panel .form-check-input { cursor:pointer; }
+    .export-panel #lastExportMsg { font-size:.65rem; color:#64748b; }
+    /* Backdrop eliminado: panel no-modal */
+    @keyframes backdropFade { to { opacity:1; } }
+    @media (max-width: 992px){ .export-panel { position:fixed; top:auto; bottom:16px; right:16px; left:16px; transform:translateY(30px); width:auto; max-width:none; } .export-panel.active { transform:translateY(0); } }
 
     .stats-card {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.10) 100%) !important;
         backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        transition: var(--transition-smooth);
+        border: 1px solid rgba(255, 255, 255, 0.28) !important;
+        transition: all .45s ease;
     }
 
     .stats-card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--shadow-xl);
-        border-color: rgba(255, 255, 255, 0.4);
+        transform: translateY(-6px);
+        box-shadow: 0 16px 38px -6px rgba(31, 41, 55, 0.5) !important;
+        border-color: rgba(255, 255, 255, 0.45) !important;
     }
 
     .content-card {
@@ -368,10 +386,36 @@
             display: none;
         }
     }
+
+    /* Optimización / Unificación tema claro */
+    body { background:#f4f6fb; }
+    .page-wrapper-bg { background:linear-gradient(180deg,#f4f6fb 0%,#eef2f9 100%); min-height:100%; }
+    .hero-section { min-height:auto; padding:3rem 0 2.25rem; border-bottom:6px solid rgba(118,75,162,0.25); }
+    .calendar-card, .filter-card { background:#ffffff !important; border:1px solid #e2e8f0 !important; box-shadow:0 6px 16px -4px rgba(15,23,42,0.08) !important; }
+    /* Mantener efecto glass de stats en hero */
+    .stats-card { background:linear-gradient(135deg,rgba(255,255,255,0.22) 0%,rgba(255,255,255,0.10) 100%) !important; backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.28) !important; box-shadow:0 10px 28px -8px rgba(31,41,55,0.4) !important; transition:all .45s ease; }
+    .stats-card:hover { transform:translateY(-6px); box-shadow:0 16px 38px -6px rgba(31,41,55,0.5) !important; border-color:rgba(255,255,255,0.45) !important; }
+    .fc-col-header-cell { background:#f1f5f9 !important; }
+    .fc-daygrid-day { background:#ffffff !important; }
+    .fc-scrollgrid { background:#ffffff !important; box-shadow:0 8px 28px -6px rgba(15,23,42,.15) !important; }
+    .fc-toolbar { background:rgba(255,255,255,0.8) !important; border:1px solid #e2e8f0 !important; }
+    .fc-button-primary { background:linear-gradient(90deg,#6366f1,#8b5cf6) !important; box-shadow:0 4px 10px -2px rgba(99,102,241,.4) !important; }
+    .fc-button-primary:hover { box-shadow:0 6px 16px -2px rgba(99,102,241,.5) !important; }
+    /* Ocultamiento rápido de eventos por filtro */
+    .fc-event-hidden { display:none !important; }
+    /* Loader overlay */
+    .calendar-loading-overlay { position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,0.82),rgba(255,255,255,0.92)); backdrop-filter:blur(6px); z-index:50; border-radius:16px; transition:opacity .35s ease, visibility .35s ease; }
+    .calendar-loading-overlay.hidden { opacity:0; visibility:hidden; pointer-events:none; }
+    .calendar-progress .progress-bar { position:relative; }
+    .calendar-progress .progress-bar:after { content:''; position:absolute; inset:0; background:linear-gradient(120deg,rgba(255,255,255,.35),rgba(255,255,255,0) 60%); mix-blend-mode:overlay; animation: shimmer 2.4s infinite; border-radius:inherit; }
+    @keyframes shimmer { 0%{transform:translateX(-60%);} 100%{transform:translateX(120%);} }
+    .calendar-loading-overlay.error .progress-bar { background:linear-gradient(90deg,#dc2626,#f87171)!important; }
+    .calendar-loading-overlay.error .text-primary { color:#dc2626 !important; }
 </style>
 @endpush
 
 @section('content')
+<div class="page-wrapper-bg">
 <!-- Hero Section -->
 <div class="calendar-page hero-section">
     <!-- Elementos flotantes decorativos -->
@@ -524,56 +568,67 @@
         <!-- Controles del calendario -->
         <div class="row justify-content-center mb-5">
             <div class="col-lg-10">
-                <div class="filter-card rounded-4 p-4 mb-4 shadow-lg">
-                    <div class="row g-3 align-items-center">
-                        <div class="col-md-4">
-                            <h6 class="fw-semibold text-dark mb-2">
-                                <i class="fas fa-eye text-primary me-2"></i>Mostrar en Calendario
-                            </h6>
-                            <div class="d-flex gap-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="showEvents" checked>
-                                    <label class="form-check-label fw-semibold" for="showEvents">
-                                        <span class="badge me-2" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">●</span>Eventos
+                <div class="filter-card enhanced rounded-4 p-4 mb-4 shadow-lg position-relative overflow-hidden">
+                    <div class="position-absolute top-0 start-0 w-100 h-100" style="background: radial-gradient(circle at 15% 20%, rgba(102,126,234,0.15), transparent 60%), radial-gradient(circle at 85% 75%, rgba(118,75,162,0.18), transparent 55%);"></div>
+                    <div class="position-relative">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2">
+                            <div class="d-flex align-items-center gap-3">
+                                <h5 class="mb-0 fw-bold text-dark d-flex align-items-center">
+                                    <i class="fas fa-sliders-h text-primary me-2"></i>Filtros del Calendario
+                                </h5>
+                                <span class="badge rounded-pill bg-light text-secondary border" style="font-size: .65rem;">Actualizado: <span id="calendarStatsUpdatedAt">--:--:--</span></span>
+                            </div>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <button class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick="selectAllFilters()"><i class="fas fa-check-double me-1"></i>Todos</button>
+                                <button class="btn btn-outline-secondary btn-sm rounded-pill px-3" onclick="deselectAllFilters()"><i class="fas fa-ban me-1"></i>Ninguno</button>
+                                <button class="btn btn-outline-info btn-sm rounded-pill px-3" onclick="onlyPaymentsFilter()"><i class="fas fa-money-bill-wave me-1"></i>Solo Pagos</button>
+                                <button class="btn btn-outline-dark btn-sm rounded-pill px-3" onclick="invertFilters()"><i class="fas fa-exchange-alt me-1"></i>Invertir</button>
+                                <button class="btn btn-outline-success btn-sm rounded-pill px-3" onclick="forceReloadCalendar()"><i class="fas fa-sync-alt me-1"></i>Forzar Recarga</button>
+                                <span id="forceReloadStatus" class="small text-muted ms-2"></span>
+                            </div>
+                        </div>
+                        <hr class="mt-0 mb-4" />
+                        <div class="row g-4 align-items-start">
+                            <div class="col-lg-5">
+                                <h6 class="fw-semibold text-uppercase small text-muted mb-2">Visibilidad</h6>
+                                <div class="d-flex flex-column gap-2">
+                                    <label class="d-flex align-items-center gap-2 filter-toggle py-2 px-3 rounded-3 border" style="cursor:pointer;">
+                                        <input class="form-check-input m-0" type="checkbox" id="showEvents" checked>
+                                        <span class="badge border text-white" style="background: linear-gradient(135deg, #667eea, #764ba2); width:20px;">E</span>
+                                        <span class="flex-grow-1 fw-semibold">Eventos</span>
+                                        <span class="badge bg-light text-dark" id="filterCountEvents">0</span>
                                     </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="showTasks" checked>
-                                    <label class="form-check-label fw-semibold" for="showTasks">
-                                        <span class="badge bg-warning me-2">●</span>Tareas
+                                    <label class="d-flex align-items-center gap-2 filter-toggle py-2 px-3 rounded-3 border" style="cursor:pointer;">
+                                        <input class="form-check-input m-0" type="checkbox" id="showTasks" checked>
+                                        <span class="badge bg-warning text-dark" style="width:20px;">T</span>
+                                        <span class="flex-grow-1 fw-semibold">Tareas</span>
+                                        <span class="badge bg-light text-dark" id="filterCountTasks">0</span>
                                     </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="showPayments" checked>
-                                    <label class="form-check-label fw-semibold" for="showPayments">
-                                        <span class="badge bg-success me-2">●</span>Pagos
+                                    <label class="d-flex align-items-center gap-2 filter-toggle py-2 px-3 rounded-3 border" style="cursor:pointer;">
+                                        <input class="form-check-input m-0" type="checkbox" id="showPayments" checked>
+                                        <span class="badge bg-success" style="width:20px;">P</span>
+                                        <span class="flex-grow-1 fw-semibold">Pagos</span>
+                                        <span class="badge bg-light text-dark" id="filterCountPayments">0</span>
                                     </label>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <h6 class="fw-semibold text-dark mb-2">
-                                <i class="fas fa-calendar-alt text-primary me-2"></i>Vista del Calendario
-                            </h6>
-                            <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-outline-primary btn-sm" data-view="dayGridMonth" onclick="changeCalendarView('dayGridMonth')">Mes</button>
-                                <button type="button" class="btn btn-outline-primary btn-sm" data-view="timeGridWeek" onclick="changeCalendarView('timeGridWeek')">Semana</button>
-                                <button type="button" class="btn btn-outline-primary btn-sm" data-view="timeGridDay" onclick="changeCalendarView('timeGridDay')">Día</button>
+                            <div class="col-lg-4">
+                                <h6 class="fw-semibold text-uppercase small text-muted mb-2">Vista</h6>
+                                <div class="btn-group w-100" role="group">
+                                    <button type="button" class="btn btn-outline-primary btn-sm" data-view="dayGridMonth" onclick="changeCalendarView('dayGridMonth')">Mes</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" data-view="timeGridWeek" onclick="changeCalendarView('timeGridWeek')">Semana</button>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" data-view="timeGridDay" onclick="changeCalendarView('timeGridDay')">Día</button>
+                                </div>
+                                <div class="mt-3 small text-muted">
+                                    <i class="fas fa-info-circle me-1"></i> Tu selección se guarda automáticamente.
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <h6 class="fw-semibold text-dark mb-2">
-                                <i class="fas fa-download text-primary me-2"></i>Exportar
-                            </h6>
-                            <div class="dropdown">
-                                <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown">
-                                    <i class="fas fa-file-export me-2"></i>Exportar
+                            <div class="col-lg-3 position-relative">
+                                <h6 class="fw-semibold text-uppercase small text-muted mb-2">Exportar</h6>
+                                <button type="button" class="btn btn-outline-secondary btn-sm w-100 d-flex align-items-center justify-content-center gap-2" data-bs-toggle="modal" data-bs-target="#exportModal">
+                                    <i class="fas fa-file-export"></i><span>Exportar</span>
                                 </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#"><i class="fas fa-file-excel text-success me-2"></i>Excel</a></li>
-                                    <li><a class="dropdown-item" href="#"><i class="fas fa-file-pdf text-danger me-2"></i>PDF</a></li>
-                                    <li><a class="dropdown-item" href="#"><i class="fas fa-calendar text-info me-2"></i>ICS</a></li>
-                                </ul>
+                                <div class="mt-3 small text-muted" id="filterActiveSummary">Mostrando: Eventos, Tareas y Pagos</div>
                             </div>
                         </div>
                     </div>
@@ -585,12 +640,56 @@
         <div class="row justify-content-center">
             <div class="col-lg-10">
                 <div class="calendar-card p-4 mb-5">
+                    <div id="calendarLoadingOverlay" class="calendar-loading-overlay d-flex flex-column align-items-center justify-content-center text-center px-4">
+                        <div class="spinner-border text-primary mb-3" role="status" aria-hidden="true"></div>
+                        <div class="text-primary fw-semibold mb-1">Cargando calendario...</div>
+                        <small class="text-muted mb-3" id="calendarLoadingDetail">Preparando datos</small>
+                        <div class="w-100" style="max-width:380px;">
+                            <div class="progress calendar-progress rounded-pill" style="height:10px; background:rgba(0,0,0,0.08);">
+                                <div id="calendarProgressBar" class="progress-bar bg-gradient" role="progressbar" style="width:0%; transition:width .6s cubic-bezier(.4,.2,.2,1); background:linear-gradient(90deg,#6366f1,#8b5cf6);"></div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-1 small text-muted">
+                                <span id="calendarProgressValue">0%</span>
+                                <span id="calendarProgressPhase">Inicializando</span>
+                            </div>
+                        </div>
+                    </div>
                     <div id="calendar"></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+</div>
+
+            <!-- Modal de Exportación -->
+            <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content rounded-4 border-0 shadow-lg">
+                        <div class="modal-header border-0" style="background:linear-gradient(135deg,#667eea,#764ba2); color:#fff;">
+                            <h5 class="modal-title fw-semibold" id="exportModalLabel"><i class="fas fa-file-export me-2"></i>Exportar Calendario</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="mb-4 text-muted small">Genera archivos para usar tu calendario en otras aplicaciones o compartirlos.</p>
+                            <div class="list-group mb-3">
+                                    <button id="exportIcsGenerate" type="button" class="list-group-item list-group-item-action d-flex align-items-center gap-3 rounded-3">
+                                            <span class="badge bg-info p-3" style="min-width:46px; border-radius:14px; background:linear-gradient(135deg,#17a2b8,#6f42c1) !important;"><i class="fas fa-calendar-alt"></i></span>
+                                            <span class="flex-grow-1 text-start">
+                                                    <strong>Archivo ICS</strong><br>
+                                                    <small class="text-muted">Importar en Google Calendar, Outlook, etc.</small>
+                                            </span>
+                                            <i class="fas fa-download text-secondary"></i>
+                                    </button>
+                            </div>
+                            <div class="small text-muted" id="exportIcsMsg">Aún no generado</div>
+                        </div>
+                        <div class="modal-footer border-0">
+                            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 <!-- Modal para detalles -->
 <div class="modal fade" id="eventModal" tabindex="-1">
@@ -618,74 +717,42 @@
 @endsection
 
 @push('scripts')
-<!-- Cargar rutas de Laravel para JavaScript -->
+<!-- Rutas disponibles en JS -->
 <script>
-    window.routes = {
-        calendarEvents: '{{ route("calendar.events") }}',
-        paymentsCalendarEvents: '{{ route("payments.calendar-events") }}'
-    };
+window.routes = {
+    calendarEvents: '{{ route("calendar.events") }}',
+    paymentsCalendarEvents: '{{ route("payments.calendar-events") }}'
+};
 </script>
-<!-- Script externo del calendario para evitar conflictos con Vue.js -->
 <script src="{{ asset('js/calendar.js') }}"></script>
+<!-- Script para exportación ICS dentro del modal -->
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+    const btn = document.getElementById('exportIcsGenerate');
+    const msg = document.getElementById('exportIcsMsg');
+    if(btn){
+        btn.addEventListener('click', ()=>{
+            const now = new Date();
+            const icsContent = `BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Agenda Escolar//ES\nCALSCALE:GREGORIAN\nX-WR-CALNAME:Agenda Escolar\nEND:VCALENDAR`;
+            const blob = new Blob([icsContent], { type: 'text/calendar' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'calendario.ics'; a.click();
+            setTimeout(()=>URL.revokeObjectURL(url), 4000);
+            if(msg){ msg.textContent = 'ICS generado a las ' + now.toLocaleTimeString('es-ES'); }
+        });
+    }
+});
+</script>
 @endpush
 
 @push('styles')
 <style>
-/* Encapsular todos los estilos del calendario dentro de .calendar-page */
 .calendar-page .gradient-text {
     background: linear-gradient(45deg, #667eea, #764ba2);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-}
-
-.calendar-page .header-title {
-    color: white;
-    font-weight: 700;
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.calendar-page .header-subtitle {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1.1rem;
-    font-weight: 300;
-}
-
-.calendar-page .calendar-toolbar {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    padding: 1.5rem 0;
-    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.calendar-page .toolbar-content {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.calendar-page .view-switcher .btn-view {
-    background: transparent;
-    border: 2px solid #e9ecef;
-    color: #6c757d;
-    padding: 0.5rem 1rem;
-    border-radius: 0;
-    transition: all 0.3s ease;
-    font-weight: 500;
-}
-
-.calendar-page .view-switcher .btn-view:first-child {
-    border-radius: 25px 0 0 25px;
+    -webkit-text-fill-color: transparent;
 }
 
 .calendar-page .view-switcher .btn-view:last-child {
@@ -822,7 +889,7 @@
 }
 
 .calendar-page .export-dropdown .dropdown-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #667eea, #764ba2);
     color: white;
     padding: 12px 20px;
     margin: 0;

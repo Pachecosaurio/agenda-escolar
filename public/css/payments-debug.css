@@ -1,0 +1,55 @@
+/* ARCHIVO DE DEBUG PARA PAGOS - Máxima prioridad */
+
+/* Reset y forzado de estilos */
+.payments-page {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    min-height: 100vh !important;
+    width: 100% !important;
+}
+
+.payments-page * {
+    box-sizing: border-box !important;
+}
+
+.payments-page .payments-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    min-height: 100vh !important;
+    position: relative !important;
+}
+
+.payments-page .glass-card {
+    background: rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 20px !important;
+}
+
+.payments-page .white-text {
+    color: #ffffff !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8) !important;
+}
+
+.payments-page .payment-icon {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1)) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 50% !important;
+    width: 60px !important;
+    height: 60px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.payments-page .payment-icon i {
+    color: #ffffff !important;
+    font-size: 1.5rem !important;
+}
+
+/* Debug: Agregar borde rojo para verificar que se aplica */
+.payments-page .debug-test {
+    border: 3px solid red !important;
+    background: yellow !important;
+}

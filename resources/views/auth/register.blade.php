@@ -2,7 +2,6 @@
 
 @push('styles')
 <style>
-    /* Estilos solo modo claro para registro */
     .dark-mode .register-title {
         color: #fff176 !important;
         font-size: 2.2rem;
@@ -62,4 +61,3 @@
     </div>
 </div>
 @endsection
-// ...existing code...

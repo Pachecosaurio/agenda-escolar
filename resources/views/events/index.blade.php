@@ -2,6 +2,22 @@
 
 @push('styles')
 <style>
+    /* Clases dinámicas para headers de eventos */
+    .event-header-recurring {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        overflow: hidden;
+    }
+    
+    .event-header-generated {
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+        overflow: hidden;
+    }
+    
+    .event-header-regular {
+        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%) !important;
+        overflow: hidden;
+    }
+
     .card:hover {
         transform: translateY(-8px) scale(1.02);
         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2) !important;
@@ -666,7 +682,10 @@
                     <div class="col-lg-6 col-xl-4 mb-4">
                         <div class="card event-card border-0 rounded-4 shadow-lg h-100" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%); backdrop-filter: blur(20px); transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); border: 1px solid rgba(255,255,255,0.2);">
                             <!-- Header de la tarjeta con gradiente dinámico -->
-                            <div class="card-header border-0 rounded-top-4 position-relative" style="background: linear-gradient(135deg, {{ $event->isRecurringParent() ? '#667eea' : ($event->isGeneratedEvent() ? '#17a2b8' : '#6c757d') }} 0%, {{ $event->isRecurringParent() ? '#764ba2' : ($event->isGeneratedEvent() ? '#138496' : '#5a6268') }} 100%); overflow: hidden;">
+                            @php
+                                $headerClass = $event->isRecurringParent() ? 'event-header-recurring' : ($event->isGeneratedEvent() ? 'event-header-generated' : 'event-header-regular');
+                            @endphp
+                            <div class="card-header border-0 rounded-top-4 position-relative {{ $headerClass }}">
                                 <!-- Efecto de brillo -->
                                 <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%); transform: translateX(-100%); transition: transform 0.6s;"></div>
                                 
@@ -708,7 +727,11 @@
                                                     <i class="fas fa-edit text-primary me-2"></i>Editar
                                                 </a></li>
                                                 <li><hr class="dropdown-divider"></li>
-                                                <li><a class="dropdown-item text-danger" href="#" onclick="confirmDelete({{ $event->id }}, '{{ $event->title }}', {{ $event->isRecurringParent() ? 'true' : 'false' }})">
+                                                <li><a class="dropdown-item text-danger" href="#" 
+                                                       data-event-id="{{ $event->id }}" 
+                                                       data-event-title="{{ $event->title }}" 
+                                                       data-is-recurring="{{ $event->isRecurringParent() ? 'true' : 'false' }}"
+                                                       onclick="confirmDelete(this.dataset.eventId, this.dataset.eventTitle, this.dataset.isRecurring)">
                                                     <i class="fas fa-trash text-danger me-2"></i>Eliminar
                                                 </a></li>
                                             </ul>
@@ -845,7 +868,10 @@
                                         <i class="fas fa-edit me-1"></i>Editar
                                     </a>
                                     
-                                    <button onclick="confirmDelete({{ $event->id }}, '{{ $event->title }}', {{ $event->isRecurringParent() ? 'true' : 'false' }})" 
+                                    <button data-event-id="{{ $event->id }}" 
+                                            data-event-title="{{ $event->title }}" 
+                                            data-is-recurring="{{ $event->isRecurringParent() ? 'true' : 'false' }}"
+                                            onclick="confirmDelete(this.dataset.eventId, this.dataset.eventTitle, this.dataset.isRecurring)"
                                             class="btn btn-outline-danger btn-sm rounded-pill px-4 flex-fill fw-semibold">
                                         <i class="fas fa-trash me-1"></i>Eliminar
                                     </button>

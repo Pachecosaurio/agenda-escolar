@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Pagination\Paginator;
 use Carbon\Carbon;
 use App\Models\Task;
 use App\Models\Event;
@@ -24,6 +25,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Usar estilos de Bootstrap para la paginación en todas las vistas
+        Paginator::useBootstrap();
+
         View::composer('*', function ($view) {
             if (Auth::check()) {
                 $now = Carbon::now();

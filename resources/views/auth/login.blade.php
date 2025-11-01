@@ -2,7 +2,6 @@
 
 @push('styles')
 <style>
-    /* Estilos solo modo claro para login */
     .dark-mode .login-title {
         color: #fff176 !important;
         font-size: 2.2rem;
@@ -64,4 +63,3 @@
         </div>
     </div>
 @endsection
-// ...existing code...

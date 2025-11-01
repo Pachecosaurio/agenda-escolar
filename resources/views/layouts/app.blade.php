@@ -4,9 +4,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    
-    <!-- Configuración para CORS y CDNs con política menos restrictiva -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src 'self' 'unsafe-inline' *; connect-src 'self' ws: wss: http: https: *; img-src 'self' data: *; font-src 'self' data: *;">
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -25,12 +22,33 @@
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css' rel='stylesheet' />
     <link href='https://unpkg.com/fullcalendar@5.11.5/main.min.css' rel='stylesheet' />
 
+    <!-- CSS crítico para páginas específicas -->
+    <style>
+    /* CSS CRÍTICO PARA PAYMENTS - Los estilos se manejan con inline styles */
+    .payments-page .white-text {
+        color: #ffffff !important;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8) !important;
+    }
+    .payments-page .glass-card {
+        background: rgba(255, 255, 255, 0.15) !important;
+        backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 20px !important;
+    }
+    </style>
+
     <!-- Estilos personalizados de agenda escolar -->
     <style>
         /* Modo claro: estilos clásicos (sin cambios) */
         body {
             background: linear-gradient(135deg, #e3f0ff 0%, #fffbe6 100%);
             min-height: 100vh;
+        }
+        
+        /* Override para páginas específicas */
+        body.payments-body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            min-height: 100vh !important;
         }
         /* CSS Variables - Consistente con calendario/eventos */
         :root {
@@ -1017,7 +1035,7 @@
     <!-- Estilos adicionales de vistas específicas -->
     @stack('styles')
 </head>
-<body>
+<body class="@if(request()->is('payments*')) payments-body @endif">
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
@@ -1114,6 +1132,11 @@
                                     @empty
                                         <div class="dropdown-item text-muted text-center">No tienes notificaciones</div>
                                     @endforelse
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item text-center" href="{{ route('notifications.index') }}">
+                                        <i class="fa-solid fa-bell me-2"></i>
+                                        Ver todas las notificaciones
+                                    </a>
                                 </div>
                             </li>
                             <!-- Usuario -->
@@ -1203,11 +1226,13 @@
         /* Footer Moderno con Glass Effect */
         .modern-footer {
             position: relative;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            background:#fff !important; /* Fondo sólido blanco forzado */
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border-top: 1px solid #e2e8f0;
             margin-top: auto;
             overflow: hidden;
+            box-shadow: 0 -4px 18px rgba(0,0,0,0.05);
         }
 
         .footer-wave {
@@ -1219,6 +1244,7 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             clip-path: polygon(0 15px, 100% 0, 100% 25px, 0 40px);
             animation: waveMove 6s ease-in-out infinite;
+            opacity: .9; /* ligera reducción para integrarse con fondo blanco */
         }
 
         @keyframes waveMove {
@@ -1668,13 +1694,29 @@
 
     <!-- FullCalendar JS - Múltiples CDNs con detección de fallos -->
     <script>
-        // Cargar FullCalendar con fallback y callback
+        // Cargar FullCalendar con fallback y callback (prevenir carga duplicada)
         function loadFullCalendar() {
+            // Verificar si FullCalendar ya está cargado
+            if (window.FullCalendar) {
+                console.log('✅ FullCalendar ya está cargado');
+                initializeCalendarWhenReady();
+                return;
+            }
+
+            // Verificar si ya se está cargando
+            if (window.fullCalendarLoading) {
+                console.log('⏳ FullCalendar ya se está cargando...');
+                return;
+            }
+
+            window.fullCalendarLoading = true;
+            
             // Intentar JSDelivr primero
             const script1 = document.createElement('script');
             script1.src = 'https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js';
             script1.onload = function() {
                 console.log('✅ FullCalendar cargado desde JSDelivr');
+                window.fullCalendarLoading = false;
                 loadLocale();
             };
             script1.onerror = function() {
@@ -1684,10 +1726,12 @@
                 script2.src = 'https://unpkg.com/fullcalendar@5.11.5/main.min.js';
                 script2.onload = function() {
                     console.log('✅ FullCalendar cargado desde UNPKG');
+                    window.fullCalendarLoading = false;
                     loadLocale();
                 };
                 script2.onerror = function() {
                     console.error('❌ Error: No se pudo cargar FullCalendar desde ningún CDN');
+                    window.fullCalendarLoading = false;
                 };
                 document.head.appendChild(script2);
             };
@@ -1695,6 +1739,13 @@
         }
         
         function loadLocale() {
+            // Verificar si el locale ya está cargado
+            if (window.FullCalendar && window.FullCalendar.globalLocales && window.FullCalendar.globalLocales.es) {
+                console.log('✅ Locale español ya está cargado');
+                initializeCalendarWhenReady();
+                return;
+            }
+
             const localeScript = document.createElement('script');
             localeScript.src = 'https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/locales/es.js';
             localeScript.onload = function() {

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class EventController extends Controller
 {
@@ -12,7 +14,8 @@ class EventController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Event::where('user_id', auth()->id());
+        $query = Event::where('user_id', Auth::id())
+            ->whereNull('parent_event_id'); // No listar ocurrencias generadas
         
         // Aplicar filtros
         if ($request->filled('search')) {
@@ -56,7 +59,7 @@ class EventController extends Controller
             'description' => $request->description,
             'start' => $request->start,
             'end' => $request->end,
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'is_recurring' => $request->boolean('is_recurring'),
         ];
 
@@ -70,11 +73,6 @@ class EventController extends Controller
 
         $event = Event::create($eventData);
 
-        // Generar eventos recurrentes si es necesario
-        if ($event->is_recurring) {
-            $event->generateRecurringEvents();
-        }
-
         return redirect()->route('events.index')->with('success', 
             $event->is_recurring ? 
             'Evento recurrente creado correctamente con sus repeticiones' : 
@@ -85,9 +83,9 @@ class EventController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Event $event)
     {
-        //
+        return view('events.show', compact('event'));
     }
 
     /**
@@ -141,11 +139,9 @@ class EventController extends Controller
 
         $event->update($eventData);
 
-        // Regenerar eventos recurrentes si es un evento padre y está habilitada la recurrencia
-        if ($event->isRecurringParent() && $event->is_recurring) {
-            $event->generateRecurringEvents();
-        } elseif ($event->isRecurringParent() && !$event->is_recurring) {
-            // Si se desactiva la recurrencia, eliminar eventos generados
+        // Ya no materializamos ocurrencias; se calculan on-the-fly en el calendario.
+        // Si existieran eventos generados previamente y se desactiva la recurrencia, limpiarlos:
+        if ($event->isRecurringParent() && !$event->is_recurring) {
             $event->childEvents()->delete();
         }
 
@@ -168,36 +164,83 @@ class EventController extends Controller
     /**
      * Display a listing of the resource in JSON format for FullCalendar.
      */
-    public function apiEvents()
+    public function apiEvents(Request $request)
     {
-        $userId = auth()->id();
-        $events = \App\Models\Event::where('user_id', $userId)->get()->map(function($event) {
-            return [
-                'title' => $event->title,
-                'start' => $event->start,
-                'end' => $event->end,
-                'description' => $event->description,
-                'extendedProps' => [
-                    'type' => 'event',
-                    'description' => $event->description,
-                ],
-                'backgroundColor' => '#667eea',
-                'borderColor' => '#764ba2',
-            ];
-        });
-        $tasks = \App\Models\Task::where('user_id', $userId)->whereNotNull('due_date')->get()->map(function($task) {
-            return [
+        $userId = Auth::id();
+        // FullCalendar envía 'start' y 'end' en ISO8601
+        $rangeStart = $request->query('start') ? Carbon::parse($request->query('start')) : Carbon::now()->startOfMonth();
+        $rangeEnd = $request->query('end') ? Carbon::parse($request->query('end')) : Carbon::now()->endOfMonth();
+
+        $results = [];
+
+        // Eventos (expandir recurrencia on-the-fly)
+        $events = Event::where('user_id', $userId)
+            ->whereNull('parent_event_id') // Evitar duplicados: no incluir hijos generados
+            ->get();
+        foreach ($events as $event) {
+            if ($event->is_recurring && $event->parent_event_id === null) {
+                $occurs = $event->occurrencesBetween($rangeStart, $rangeEnd);
+                foreach ($occurs as $idx => $occ) {
+                    $results[] = [
+                        'id' => 'event_' . $event->id . '_occ_' . $idx,
+                        'title' => $event->title,
+                        'start' => $occ['start']->toIso8601String(),
+                        'end' => $occ['end']->toIso8601String(),
+                        'description' => $event->description,
+                        'extendedProps' => [
+                            'type' => 'event',
+                            'description' => $event->description,
+                            'url' => route('events.show', $event),
+                        ],
+                        'backgroundColor' => '#667eea',
+                        'borderColor' => '#764ba2',
+                    ];
+                }
+            } else {
+                // Evento simple (o generado existente)
+                $start = $event->start instanceof Carbon ? $event->start : Carbon::parse($event->start);
+                $end = $event->end ? ($event->end instanceof Carbon ? $event->end : Carbon::parse($event->end)) : $start;
+                if ($start <= $rangeEnd && $end >= $rangeStart) {
+                    $results[] = [
+                        'id' => 'event_' . $event->id,
+                        'title' => $event->title,
+                        'start' => $start->toIso8601String(),
+                        'end' => $end->toIso8601String(),
+                        'description' => $event->description,
+                        'extendedProps' => [
+                            'type' => 'event',
+                            'description' => $event->description,
+                            'url' => route('events.show', $event),
+                        ],
+                        'backgroundColor' => '#667eea',
+                        'borderColor' => '#764ba2',
+                    ];
+                }
+            }
+        }
+
+        // Tareas (filtrar por rango para no sobrecargar)
+        $tasks = \App\Models\Task::where('user_id', $userId)
+            ->whereNotNull('due_date')
+            ->whereBetween('due_date', [$rangeStart->toDateTimeString(), $rangeEnd->toDateTimeString()])
+            ->get();
+        foreach ($tasks as $task) {
+            $results[] = [
+                'id' => 'task_' . $task->id,
                 'title' => '[Tarea] ' . $task->title,
-                'start' => $task->due_date,
-                'end' => $task->due_date,
+                'start' => Carbon::parse($task->due_date)->toIso8601String(),
+                'end' => Carbon::parse($task->due_date)->toIso8601String(),
+                'description' => $task->description,
                 'extendedProps' => [
                     'type' => 'task',
                     'description' => $task->description ?? '',
+                    'url' => route('tasks.show', $task),
                 ],
                 'backgroundColor' => '#ffd700',
                 'borderColor' => '#ffed4e',
             ];
-        });
-        return response()->json($events->concat($tasks));
+        }
+
+        return response()->json($results);
     }
 }

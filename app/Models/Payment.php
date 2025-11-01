@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Carbon\Carbon;
 
@@ -27,6 +29,7 @@ use Carbon\Carbon;
  */
 class Payment extends Model
 {
+    use HasFactory, SoftDeletes;
     protected $fillable = [
         'user_id',
         'title',
@@ -75,18 +78,63 @@ class Payment extends Model
     public static function getCategories(): array
     {
         return [
-            'colegiatura' => 'Colegiatura',
-            'libros' => 'Libros',
-            'uniformes' => 'Uniformes',
-            'transporte' => 'Transporte',
-            'actividades' => 'Actividades',
-            'material' => 'Material Escolar',
-            'otros' => 'Otros'
+            'tuition' => 'Colegiatura',
+            'books' => 'Libros',
+            'activities' => 'Actividades',
+            'transport' => 'Transporte',
+            'cafeteria' => 'Cafetería',
+            'other' => 'Otros'
         ];
     }
 
     public function getCategoryTextAttribute(): string
     {
-        return self::getCategories()[$this->category] ?? $this->category;
+        return self::getCategories()[$this->category] ?? ucfirst($this->category);
+    }
+
+    // Scopes
+    public function scopeForUser($query, int $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    public function scopeStatus($query, ?string $status)
+    {
+        if ($status) {
+            $query->where('status', $status);
+        }
+        return $query;
+    }
+
+    public function scopeCategory($query, ?string $category)
+    {
+        if ($category) {
+            $query->where('category', $category);
+        }
+        return $query;
+    }
+
+    public function scopeBetweenDates($query, ?string $from, ?string $to)
+    {
+        if ($from) {
+            $query->whereDate('due_date', '>=', $from);
+        }
+        if ($to) {
+            $query->whereDate('due_date', '<=', $to);
+        }
+        return $query;
+    }
+
+    public function scopeSearch($query, ?string $term)
+    {
+        if ($term) {
+            $term = "%{$term}%";
+            $query->where(function($q) use ($term) {
+                $q->where('title', 'like', $term)
+                  ->orWhere('description', 'like', $term)
+                  ->orWhere('notes', 'like', $term);
+            });
+        }
+        return $query;
     }
 }

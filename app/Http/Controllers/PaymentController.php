@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Carbon\Carbon;
 
 class PaymentController extends Controller
 {
@@ -19,26 +20,69 @@ class PaymentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $payments = Payment::where('user_id', Auth::id())
-            ->orderBy('due_date', 'desc')
-            ->paginate(10);
+        $userId = Auth::id();
+        $status = $request->get('status');
+        $category = $request->get('category');
+        $search = $request->get('q');
+        $from = $request->get('from');
+        $to = $request->get('to');
 
-        // Calculate statistics from all payments (not just paginated)
-        $allPayments = Payment::where('user_id', Auth::id());
+        $query = Payment::forUser($userId)
+            ->status($status)
+            ->category($category)
+            ->betweenDates($from, $to)
+            ->search($search)
+            ->orderBy('due_date', 'desc');
+
+        $payments = $query->paginate(12)->withQueryString();
+
+        $all = Payment::forUser($userId);
+        $now = Carbon::now();
+
+        // Force overdue status update for due_date passed & not paid
+        Payment::forUser($userId)
+            ->where('status', 'pending')
+            ->whereDate('due_date', '<', $now->toDateString())
+            ->update(['status' => 'overdue']);
+
         $stats = [
-            'totalPayments' => $allPayments->count(),
-            'totalAmount' => $allPayments->sum('amount'),
-            'paidAmount' => $allPayments->where('status', 'paid')->sum('amount'),
-            'pendingAmount' => $allPayments->where('status', 'pending')->sum('amount'),
-            'overdueAmount' => $allPayments->where('status', 'overdue')->sum('amount'),
-            'paidCount' => $allPayments->where('status', 'paid')->count(),
-            'pendingCount' => $allPayments->where('status', 'pending')->count(),
-            'overdueCount' => $allPayments->where('status', 'overdue')->count(),
+            'totalPayments' => (clone $all)->count(),
+            'totalAmount' => (clone $all)->sum('amount'),
+            'paidAmount' => (clone $all)->where('status', 'paid')->sum('amount'),
+            'pendingAmount' => (clone $all)->where('status', 'pending')->sum('amount'),
+            'overdueAmount' => (clone $all)->where('status', 'overdue')->sum('amount'),
+            'paidCount' => (clone $all)->where('status', 'paid')->count(),
+            'pendingCount' => (clone $all)->where('status', 'pending')->count(),
+            'overdueCount' => (clone $all)->where('status', 'overdue')->count(),
         ];
 
-        return view('payments.index', compact('payments', 'stats'));
+        // Category distribution
+        $categories = Payment::getCategories();
+        $categoryDistribution = [];
+        foreach ($categories as $key => $label) {
+            $catQuery = (clone $all)->where('category', $key);
+            $categoryDistribution[$key] = [
+                'label' => $label,
+                'count' => $catQuery->count(),
+                'amount' => $catQuery->sum('amount')
+            ];
+        }
+
+        return view('payments.index', [
+            'payments' => $payments,
+            'stats' => $stats,
+            'filters' => [
+                'status' => $status,
+                'category' => $category,
+                'q' => $search,
+                'from' => $from,
+                'to' => $to
+            ],
+            'categories' => $categories,
+            'categoryDistribution' => $categoryDistribution
+        ]);
     }
 
     /**
@@ -55,28 +99,43 @@ class PaymentController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $validatedData = $request->validate([
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'amount' => 'required|numeric|min:0',
-            'category' => 'required|string',
+            'category' => 'required|in:tuition,books,activities,transport,cafeteria,other',
             'due_date' => 'required|date',
+            'paid_date' => 'nullable|date|after_or_equal:due_date',
+            'status' => 'nullable|in:pending,paid,overdue',
+            'payment_method' => 'nullable|in:cash,card,transfer,online',
+            'reference' => 'nullable|string|max:255',
             'notes' => 'nullable|string'
         ]);
 
+        // Determine status if not provided
+        $status = $validated['status'] ?? 'pending';
+        if ($status === 'pending' && Carbon::parse($validated['due_date'])->isPast()) {
+            $status = 'overdue';
+        }
+        if ($validated['paid_date'] ?? false) {
+            $status = 'paid';
+        }
+
         Payment::create([
             'user_id' => Auth::id(),
-            'title' => $validatedData['title'],
-            'description' => $validatedData['description'],
-            'amount' => $validatedData['amount'],
-            'category' => $validatedData['category'],
-            'due_date' => $validatedData['due_date'],
-            'status' => 'pending',
-            'notes' => $validatedData['notes']
+            'title' => $validated['title'],
+            'description' => $validated['description'] ?? null,
+            'amount' => $validated['amount'],
+            'category' => $validated['category'],
+            'due_date' => $validated['due_date'],
+            'paid_date' => $validated['paid_date'] ?? null,
+            'status' => $status,
+            'payment_method' => $validated['payment_method'] ?? null,
+            'reference' => $validated['reference'] ?? null,
+            'notes' => $validated['notes'] ?? null,
         ]);
 
-        return redirect()->route('payments.index')
-            ->with('success', 'Pago creado exitosamente.');
+        return redirect()->route('payments.index')->with('success', 'Pago creado exitosamente.');
     }
 
     /**
@@ -107,23 +166,40 @@ class PaymentController extends Controller
     {
         $this->authorize('update', $payment);
 
-        $validatedData = $request->validate([
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'amount' => 'required|numeric|min:0',
-            'category' => 'required|string',
+            'category' => 'required|in:tuition,books,activities,transport,cafeteria,other',
             'due_date' => 'required|date',
+            'paid_date' => 'nullable|date|after_or_equal:due_date',
             'status' => 'required|in:pending,paid,overdue',
-            'paid_date' => 'nullable|date',
-            'payment_method' => 'nullable|string',
-            'reference' => 'nullable|string',
+            'payment_method' => 'nullable|in:cash,card,transfer,online',
+            'reference' => 'nullable|string|max:255',
             'notes' => 'nullable|string'
         ]);
 
-        $payment->update($validatedData);
+        $status = $validated['status'];
+        if ($status !== 'paid' && ($validated['paid_date'] ?? false)) {
+            $status = 'paid';
+        } elseif ($status === 'pending' && Carbon::parse($validated['due_date'])->isPast()) {
+            $status = 'overdue';
+        }
 
-        return redirect()->route('payments.index')
-            ->with('success', 'Pago actualizado exitosamente.');
+        $payment->update([
+            'title' => $validated['title'],
+            'description' => $validated['description'] ?? null,
+            'amount' => $validated['amount'],
+            'category' => $validated['category'],
+            'due_date' => $validated['due_date'],
+            'paid_date' => $validated['paid_date'] ?? null,
+            'status' => $status,
+            'payment_method' => $validated['payment_method'] ?? null,
+            'reference' => $validated['reference'] ?? null,
+            'notes' => $validated['notes'] ?? null,
+        ]);
+
+        return redirect()->route('payments.index')->with('success', 'Pago actualizado exitosamente.');
     }
 
     /**
@@ -151,6 +227,7 @@ class PaymentController extends Controller
                 'id' => 'payment_' . $payment->id,
                 'title' => $payment->title,
                 'start' => $payment->due_date ? $payment->due_date->format('Y-m-d') : null,
+                'description' => $payment->description,
                 'backgroundColor' => $payment->status === 'paid' ? '#28a745' : ($payment->status === 'overdue' ? '#dc3545' : '#ffc107'),
                 'borderColor' => $payment->status === 'paid' ? '#28a745' : ($payment->status === 'overdue' ? '#dc3545' : '#ffc107'),
                 'textColor' => '#ffffff',
@@ -159,6 +236,7 @@ class PaymentController extends Controller
                     'status' => $payment->status,
                     'amount' => $payment->amount,
                     'category' => $payment->category_text,
+                    'description' => $payment->description,
                     'url' => route('payments.show', $payment)
                 ]
             ];

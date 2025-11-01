@@ -1,13 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CalendarExportController;
 use App\Http\Controllers\HomeController;
 
-    Route::get('/', [HomeController::class, 'index'])->name('home');
+// Ruta principal y alias 'home' para navegación en layout/tests
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
     Route::get('/home', [HomeController::class, 'index'])->name('home.dashboard');
     Route::get('/inicio', [HomeController::class, 'index']);
 
@@ -33,5 +36,12 @@ Route::middleware('auth')->group(function () {
     Route::get('tuition', function() {
         return redirect()->route('payments.index');
     })->name('tuition.index');
+
+    // Notificaciones
+    Route::get('notifications', [\App\Http\Controllers\NotificationsController::class, 'index'])->name('notifications.index');
+    Route::post('notifications/mark-all-read', [\App\Http\Controllers\NotificationsController::class, 'markAllRead'])->name('notifications.markAllRead');
+    Route::post('notifications/{id}/mark-read', [\App\Http\Controllers\NotificationsController::class, 'markRead'])->name('notifications.markRead');
+    Route::delete('notifications', [\App\Http\Controllers\NotificationsController::class, 'destroyAll'])->name('notifications.destroyAll');
+    Route::delete('notifications/{id}', [\App\Http\Controllers\NotificationsController::class, 'destroy'])->name('notifications.destroy');
 
 });
