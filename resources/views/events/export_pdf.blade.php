@@ -1,3 +1,4 @@
+{{-- Export PDF de Eventos (plantilla HTML para DomPDF). --}}
 <!DOCTYPE html>
 <html lang="es">
 <head>

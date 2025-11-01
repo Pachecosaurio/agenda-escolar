@@ -1,3 +1,4 @@
+{{-- PDF simple de listado de Tareas. --}}
 <!DOCTYPE html>
 <html lang="es">
 <head>

@@ -1,3 +1,4 @@
+{{-- Export PDF de Tareas (plantilla HTML para DomPDF). --}}
 <!DOCTYPE html>
 <html lang="es">
 <head>

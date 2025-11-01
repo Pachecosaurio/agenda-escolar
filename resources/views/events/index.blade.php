@@ -1,3 +1,4 @@
+{{-- Vista de Eventos: listado principal con filtros, estados y soporte de recurrencias. --}}
 @extends('layouts.app')
 
 @push('styles')

@@ -1,3 +1,4 @@
+{{-- Vista de Tareas: listado principal con filtros, acciones y exportes. --}}
 @extends('layouts.app')
 
 @push('styles')

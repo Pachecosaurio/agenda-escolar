@@ -1,3 +1,4 @@
+{{-- Formulario de edición de Evento. --}}
 @extends('layouts.app')
 
 @section('content')

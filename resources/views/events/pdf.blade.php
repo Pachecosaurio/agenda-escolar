@@ -1,3 +1,4 @@
+{{-- PDF simple de listado de Eventos. --}}
 <!DOCTYPE html>
 <html lang="es">
 <head>

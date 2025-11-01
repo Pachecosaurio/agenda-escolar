@@ -1,3 +1,4 @@
+{{-- Formulario de creación de Evento (incluye opciones de recurrencia). --}}
 @extends('layouts.app')
 
 @section('content')

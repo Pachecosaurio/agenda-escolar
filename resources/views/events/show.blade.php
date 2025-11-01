@@ -1,3 +1,4 @@
+{{-- Vista de detalle de Evento. --}}
 @extends('layouts.app')
 
 @push('styles')
