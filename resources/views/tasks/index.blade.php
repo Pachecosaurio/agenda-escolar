@@ -532,12 +532,18 @@
                     </div>
                 </div>
                 
+                <style>
+                    /* Fondos de cabecera de tarjeta según estado (evita CSS en línea con Blade) */
+                    .task-header { overflow: hidden; min-height: 80px; padding: 1.25rem; }
+                    .task-header--done { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); }
+                    .task-header--pending { background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); }
+                </style>
                 <div class="row">
                     @forelse($tasks as $task)
                         <div class="col-lg-6 col-xl-4 mb-4">
                             <div class="task-card content-card border-0 rounded-4 shadow-lg h-100">
                                 <!-- Header de la tarjeta -->
-                                <div class="card-header border-0 rounded-top-4 position-relative" style="background: linear-gradient(135deg, {{ $task->completed ? '#28a745' : '#ff9800' }} 0%, {{ $task->completed ? '#20c997' : '#f57c00' }} 100%); overflow: hidden; min-height: 80px; padding: 1.25rem;">
+                                <div class="card-header border-0 rounded-top-4 position-relative task-header {{ $task->completed ? 'task-header--done' : 'task-header--pending' }}">
                                     <!-- Efecto de brillo -->
                                     <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%); transform: translateX(-100%); transition: transform 0.6s;"></div>
                                     
@@ -553,7 +559,7 @@
                                             </small>
                                         </div>
                                         <div class="d-flex flex-column align-items-end gap-2 flex-shrink-0">
-                                            <span class="badge bg-white" style="border-radius: 20px; padding: 8px 12px; color: {{ $task->completed ? '#28a745' : '#ff9800' }}; font-size: 0.75rem;">
+                                            <span class="badge bg-white {{ $task->completed ? 'text-success' : 'text-warning' }}" style="border-radius: 20px; padding: 8px 12px; font-size: 0.75rem;">
                                                 <i class="fas {{ $task->completed ? 'fa-check' : 'fa-clock' }}"></i>
                                             </span>
                                             
@@ -567,7 +573,7 @@
                                                         <i class="fas fa-edit text-primary me-2"></i>Editar
                                                     </a></li>
                                                     <li><hr class="dropdown-divider"></li>
-                                                    <li><a class="dropdown-item text-danger" href="#" onclick="confirmDeleteTask({{ $task->id }}, '{{ addslashes($task->title) }}')">
+                                                    <li><a class="dropdown-item text-danger delete-task" href="#" data-task-id="{{ $task->id }}" data-task-title="{{ e($task->title) }}">
                                                         <i class="fas fa-trash text-danger me-2"></i>Eliminar
                                                     </a></li>
                                                 </ul>
@@ -633,8 +639,8 @@
                                             <i class="fas fa-edit me-1"></i>Editar
                                         </a>
                                         
-                                        <button onclick="confirmDeleteTask({{ $task->id }}, '{{ $task->title }}')" 
-                                                class="btn btn-outline-danger btn-sm rounded-pill px-4 flex-fill fw-semibold">
+                    <button class="btn btn-outline-danger btn-sm rounded-pill px-4 flex-fill fw-semibold delete-task" 
+                        data-task-id="{{ $task->id }}" data-task-title="{{ e($task->title) }}">
                                             <i class="fas fa-trash me-1"></i>Eliminar
                                         </button>
                                     </div>
@@ -826,6 +832,16 @@ document.addEventListener('DOMContentLoaded', function() {
             button.style.opacity = '1';
             button.style.transform = 'translateY(0)';
         }, Array.from(actionButtons).indexOf(button) * 150);
+    });
+    
+    // Delegación para botones/enlaces de eliminar (evita inline onclick con Blade)
+    document.addEventListener('click', function(e){
+        const el = e.target.closest('.delete-task');
+        if(!el) return;
+        e.preventDefault();
+        const id = el.getAttribute('data-task-id');
+        const title = el.getAttribute('data-task-title') || '';
+        confirmDeleteTask(id, title);
     });
 });
 </script>
