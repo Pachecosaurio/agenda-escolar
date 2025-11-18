@@ -1,0 +1,64 @@
+% Template APA básico (márgenes 2.5 cm, interlineado 1.5, paginación abajo izquierda)
+\documentclass[12pt]{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{setspace}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{lmodern}
+\usepackage{fancyhdr}
+\usepackage{tocloft}
+
+% Interlineado 1.5
+\onehalfspacing
+
+% Encabezado/pie
+\pagestyle{fancy}
+\fancyhf{}
+% Número de página en el pie, alineado a la izquierda
+\fancyfoot[L]{\thepage}
+
+% Portada (sin número)
+\begin{document}
+\pagenumbering{gobble}
+
+% ----------------- PORTADA -----------------
+\begin{center}
+    {\Large Agenda Escolar}\\[1.5em]
+    {\large Documento en Formato APA}\\[8em]
+    {\normalsize Autor: Equipo de Desarrollo}\\[0.5em]
+    {\normalsize Fecha: \\ \today}
+\end{center}
+\newpage
+
+% ----------------- ÍNDICE (sin número) -----------------
+\pagenumbering{gobble}
+\tableofcontents
+\newpage
+
+% ----------------- CONTENIDO (numera desde 1) -----------------
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\section{Resumen e Introducción}
+Agenda Escolar es una aplicación web para gestionar tareas, eventos recurrentes, calendario, pagos, exportaciones (Excel/PDF) y notificaciones. Las ocurrencias recurrentes de eventos se expanden bajo demanda según el rango visible del calendario sin materialización en base de datos.
+
+\section{Requisitos Mínimos}
+\begin{itemize}
+    \item PHP $\geq$ 8.1; Composer; Node.js y npm; SQLite/MySQL.
+    \item CPU x64, 4 GB RAM, 500 MB almacenamiento.
+\end{itemize}
+
+\section{Framework y Librerías}
+Laravel (12.x), Blade, Bootstrap 5, Vite, Vue 3, FullCalendar 6, Laravel Excel (PhpSpreadsheet), DomPDF.
+
+\section{Funciones Principales}
+Tareas (CRUD y exportación), eventos con recurrencia on-the-fly, calendario con filtros y estadísticas, pagos con eventos de calendario, notificaciones en canal database.
+
+\section{Instalación y Despliegue}
+Ver guía en README\_APA.md. En producción, compilar assets con Vite, configurar APP\_URL y usar MySQL/MariaDB.
+
+\section{Puntos a Mejorar y Visión}
+Roles y permisos avanzados, API pública, recordatorios, i18n/acc, reportes analíticos, CI/CD.
+
+\end{document}
