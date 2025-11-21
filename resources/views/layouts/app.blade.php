@@ -51,6 +51,10 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
             min-height: 100vh !important;
         }
+        body.tasks-body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 40%, #4a3d8f 100%) !important;
+            min-height: 100vh !important;
+        }
         /* CSS Variables - Consistente con calendario/eventos */
         :root {
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -1036,7 +1040,7 @@
     <!-- Estilos adicionales de vistas específicas -->
     @stack('styles')
 </head>
-<body class="@if(request()->is('payments*')) payments-body @endif">
+<body class="@if(request()->is('payments*')) payments-body @endif @if(request()->routeIs('tasks.*')) tasks-body @endif">
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
