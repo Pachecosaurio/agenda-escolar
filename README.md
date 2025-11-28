@@ -1,159 +1,469 @@
-# 📚 Agenda Escolar (Laravel 11)
+# 📚 Agenda Escolar
 
-Aplicación moderna para gestionar tareas, eventos, calendario y pagos escolares. UI clara con tema luminoso, gradientes y “glass cards”. Calendario estable con ocurrencias recurrentes generadas on‑the‑fly, exportaciones a Excel/PDF y batería de pruebas automatizadas.
+> Sistema completo de gestión académica con Laravel 12, Vue.js 3 y FullCalendar 5
 
-## ✨ Novedades clave (última actualización)
+Aplicación web moderna para gestionar **tareas**, **eventos**, **calendario interactivo** y **pagos escolares**. Arquitectura profesional con frontend modularizado, sistema de recurrencias avanzado, exportaciones múltiples y documentación técnica exhaustiva.
 
-- Ruta raíz con alias `home` para compatibilidad del navbar y pruebas.
-- Calendario FullCalendar v5.11.5 estable:
-    - Expansión de eventos recurrentes “bajo demanda” en el rango visible (no se materializan hijos en BD).
-    - Filtros instantáneos (sin refetch) y estadísticas calculadas sobre elementos visibles.
-    - Overlay/loader fiable con progreso y acción “Forzar recarga”.
-    - Preferencias persistidas en `localStorage` (vista/fecha/filtros).
-- Pagos: UI modernizada, badges de estado con contraste y endpoint JSON para eventos de calendario.
-- Exportaciones: migradas a un modal Bootstrap estable (Excel/PDF) para tareas, eventos y calendario.
-- Notificaciones: listadas desde canal database, acciones de marcar leído(s) y borrar; acceso desde el navbar.
-- Seeders y factories completas para usuarios, tareas, eventos, pagos y notificaciones.
-- Pruebas feature en verde (22/22) cubriendo calendario (incluye recurrencias), pagos, notificaciones, tareas y export.
+---
 
-## 🛠️ Stack técnico
+## 🌟 Características Principales
 
-- Backend: Laravel 11
-- Vistas: Blade + Bootstrap 5 + JS (FullCalendar vía CDN)
-- Base de datos: SQLite/MySQL
-- Exportación: Laravel Excel, DomPDF
-- Iconos: FontAwesome
+✅ **Gestión de Tareas** - CRUD completo con adjuntos, fechas de vencimiento y búsqueda  
+✅ **Calendario Interactivo** - FullCalendar v5 con eventos recurrentes (diario/semanal/mensual/anual)  
+✅ **Sistema de Pagos** - Múltiples categorías, estados, estadísticas y recordatorios  
+✅ **Notificaciones** - Sistema database-driven con marcado de leído y eliminación  
+✅ **Exportaciones** - Excel y PDF para tareas, eventos, calendario y pagos  
+✅ **Recurrencias Inteligentes** - Expansión on-the-fly sin materializar en BD  
+✅ **Persistencia Local** - Preferencias de calendario guardadas en LocalStorage  
+✅ **Datos en Español** - Factories y seeders completamente traducidos  
+✅ **Documentación Completa** - Diagramas interactivos y explicación de cada archivo  
 
-## 📋 Requisitos
+---
 
-- PHP >= 8.1
-- Composer
-- Node.js + npm
-- SQLite o MySQL
+## 🛠️ Stack Tecnológico
 
-## 🚀 Instalación y arranque
+### Backend
+- **Framework:** Laravel 12.0 (PHP 8.2+)
+- **ORM:** Eloquent con relaciones avanzadas
+- **Base de Datos:** SQLite (desarrollo) / MySQL (producción)
+- **Autenticación:** Laravel Auth + Policies
+- **Exportación:** DomPDF 3.1, Maatwebsite Excel 3.1
 
-1) Clonar e instalar dependencias
+### Frontend
+- **Framework:** Vue.js 3.2.37
+- **Calendario:** FullCalendar 5.11.5 (Core, DayGrid, TimeGrid, Interaction)
+- **CSS Framework:** Bootstrap 5.3.8
+- **Preprocesador:** Sass 1.56.1 (arquitectura @use modular)
+- **HTTP Client:** Axios 1.11.0
+- **Build Tool:** Vite 6.0 con HMR
 
-```powershell
+### DevTools
+- **Testing:** PHPUnit 11.5.3, Faker 1.23
+- **Linting:** Laravel Pint 1.24
+- **Docker:** Laravel Sail 1.41
+
+---
+
+## 📋 Requisitos del Sistema
+
+- **PHP** >= 8.2
+- **Composer** >= 2.0
+- **Node.js** >= 18.x
+- **NPM** >= 9.x
+- **SQLite** (desarrollo) o **MySQL** 8.0+ (producción)
+- **Git** (para clonar el repositorio)
+
+---
+
+## 🚀 Guía de Instalación Completa
+
+### 1️⃣ Clonar el Repositorio
+
+```bash
 git clone https://github.com/Pachecosaurio/agenda-escolar.git
 cd agenda-escolar
+```
+
+### 2️⃣ Instalar Dependencias Backend (PHP/Composer)
+
+```bash
 composer install
+```
+
+**En caso de errores:**
+- Verificar versión de PHP: `php -v` (debe ser >= 8.2)
+- Si faltan extensiones: instalar `php-mbstring`, `php-xml`, `php-sqlite3`, `php-curl`
+
+### 3️⃣ Instalar Dependencias Frontend (JavaScript/NPM)
+
+```bash
 npm install
 ```
 
-2) Configurar entorno y clave
+**Si hay vulnerabilidades:**
+```bash
+npm audit fix
+```
 
-```powershell
+### 4️⃣ Configurar Variables de Entorno
+
+```bash
+# Windows PowerShell
 copy .env.example .env
+
+# Linux/Mac
+cp .env.example .env
+```
+
+Editar el archivo `.env` y configurar:
+
+```env
+APP_NAME="Agenda Escolar"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+# Opción 1: SQLite (recomendado para desarrollo)
+DB_CONNECTION=sqlite
+DB_DATABASE=database/database.sqlite
+
+# Opción 2: MySQL (producción)
+# DB_CONNECTION=mysql
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=agenda_escolar
+# DB_USERNAME=root
+# DB_PASSWORD=tu_password
+```
+
+### 5️⃣ Generar Clave de Aplicación
+
+```bash
 php artisan key:generate
 ```
 
-3) Configurar BD (opciones)
+Esta clave es **crítica** para encriptar sesiones y datos sensibles.
 
-- SQLite rápido: en `.env` define
+### 6️⃣ Crear Base de Datos
 
-```
-DB_CONNECTION=sqlite
-DB_DATABASE="database/database.sqlite"
-```
+**Opción A: SQLite (desarrollo rápido)**
 
-    y crea el archivo vacío `database/database.sqlite` si no existe.
+```bash
+# Windows PowerShell
+New-Item -Path database/database.sqlite -ItemType File
 
-- MySQL: ajusta `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`.
-
-4) Migraciones y datos de prueba
-
-```powershell
-php artisan migrate --seed
+# Linux/Mac
+touch database/database.sqlite
 ```
 
-5) Compilar assets y correr servidor
+**Opción B: MySQL (producción)**
 
-```powershell
+Crear base de datos manualmente:
+```sql
+CREATE DATABASE agenda_escolar CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+### 7️⃣ Ejecutar Migraciones
+
+```bash
+php artisan migrate
+```
+
+Esto creará todas las tablas: `users`, `tasks`, `events`, `payments`, `notifications`, etc.
+
+### 8️⃣ Poblar con Datos de Prueba (Opcional pero Recomendado)
+
+```bash
+php artisan db:seed
+```
+
+**Datos generados:**
+- 1 usuario demo: `demo@agendaescolar.com` / `password`
+- 50 tareas en español
+- 30 eventos (algunos recurrentes)
+- 25 pagos en diversas categorías
+- Notificaciones de prueba
+
+### 9️⃣ Crear Enlace Simbólico para Archivos Subidos
+
+```bash
+php artisan storage:link
+```
+
+Esto permite acceder a archivos en `storage/app/public` desde `public/storage`.
+
+### 🔟 Compilar Assets Frontend
+
+**Desarrollo (con hot reload):**
+```bash
 npm run dev
+```
+
+**Producción:**
+```bash
+npm run build
+```
+
+### 1️⃣1️⃣ Iniciar Servidor de Desarrollo
+
+```bash
 php artisan serve
 ```
 
-## 📅 Calendario y recurrencias
+El servidor estará disponible en: **http://127.0.0.1:8000**
 
-- Endpoint: `GET` `route('calendar.events')` devuelve eventos (incluidas ocurrencias recurrentes dentro del rango solicitado) y tareas con fecha en rango.
-- Reglas de recurrencia: se expanden en memoria según el rango visible; no se crean registros hijos en BD; las “ocurrencias” no aparecen en listados ni exportaciones si no están en rango.
-- Preferencias del usuario (vista, fecha, filtros) se guardan en `localStorage`.
+---
 
-## 💳 Pagos
+## 🎯 Acceso Rápido
 
-- Página de pagos con tarjetas “glass”, estadísticas y filtros.
-- Badges de estado con clases Bootstrap para máximo contraste.
-- Endpoint JSON para alimentar eventos de calendario desde pagos.
+### Usuario Demo
+- **Email:** `demo@agendaescolar.com`
+- **Contraseña:** `password`
 
-## 📤 Exportaciones
+### Rutas Principales
+- **Home:** http://localhost:8000/
+- **Tareas:** http://localhost:8000/tasks
+- **Eventos:** http://localhost:8000/events
+- **Calendario:** http://localhost:8000/calendar
+- **Pagos:** http://localhost:8000/payments
+- **Notificaciones:** http://localhost:8000/notifications
 
-- Tareas: Excel/PDF
-- Eventos: Excel/PDF
-- Calendario: Excel/PDF
-- UI de export se muestra en un modal Bootstrap para evitar cierres involuntarios.
+---
 
-## 🔔 Notificaciones
+## 🔧 Configuración Avanzada
 
-- Canal database (Laravel). Vista `/notifications` con listado, marcar leído(s) y borrar.
-- Acceso directo desde el navbar con contador de no leídas.
+### Configurar Email (Notificaciones)
 
-## 🧪 Pruebas
+Editar `.env`:
 
-- Suite feature y unit con 22 pruebas / 78 aserciones (en verde).
-- Ejecutar:
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=tu_email@gmail.com
+MAIL_PASSWORD=tu_app_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=tu_email@gmail.com
+MAIL_FROM_NAME="${APP_NAME}"
+```
 
-```powershell
+### Configurar Cola de Trabajos (Background Jobs)
+
+```bash
+# Configurar en .env
+QUEUE_CONNECTION=database
+
+# Ejecutar worker
+php artisan queue:work
+```
+
+### Programar Tareas Cron (Recordatorios Automáticos)
+
+Agregar al crontab del servidor:
+
+```bash
+* * * * * cd /ruta/a/agenda-escolar && php artisan schedule:run >> /dev/null 2>&1
+```
+
+---
+
+## 🧪 Ejecutar Pruebas
+
+```bash
+# Todas las pruebas
 php artisan test
+
+# Solo pruebas feature
+php artisan test --testsuite=Feature
+
+# Con cobertura
+php artisan test --coverage
 ```
 
-## 🗺️ Rutas útiles
+**22 pruebas / 78 aserciones** cubren:
+- Calendario con recurrencias
+- CRUD de tareas, eventos, pagos
+- Exportaciones Excel/PDF
+- Notificaciones
+- Autenticación y autorización
 
-- Home: `/` (alias `home`)
-- Tareas: `tasks.*` (CRUD y export)
-- Eventos: `events.*` (CRUD y export)
-- Calendario: `calendar` (vista) / `calendar.events` (API) / `calendar.export*` (export)
-- Pagos: `payments.*` (CRUD) / `payments.calendar-events` (API)
-- Notificaciones: `notifications.*`
+---
 
-## 📁 Estructura del proyecto (resumen)
+## 📊 Estructura del Proyecto
 
 ```
-app/
-    Http/Controllers/   # Controladores (Tasks, Events, Payments, Notifications, Exports)
-    Models/             # Modelos (Task, Event, Payment, User, ...)
-resources/
-    views/              # Blade (calendario, pagos, notifs, tareas, eventos, layout)
-    js/, sass/, css/    # Assets con Vite
-database/
-    migrations/, seeders/, factories/
-public/
-    css/, js/, build/
+agenda-escolar/
+├── app/
+│   ├── Http/Controllers/      # 9 controladores
+│   ├── Models/                 # User, Task, Event, Payment
+│   ├── Policies/               # TaskPolicy, PaymentPolicy
+│   ├── Exports/                # Clases Excel/PDF
+│   └── Notifications/          # GeneralNotification
+├── database/
+│   ├── migrations/             # 14 migraciones
+│   ├── seeders/                # Seeders en español
+│   └── factories/              # Factories con datos realistas
+├── resources/
+│   ├── views/                  # Vistas Blade
+│   ├── js/                     # app.js, calendar.js, bootstrap.js
+│   └── sass/                   # Arquitectura modular (_variables, components/, layout/)
+├── routes/
+│   └── web.php                 # Todas las rutas del sistema
+├── public/
+│   └── build/                  # Assets compilados por Vite
+├── documentos/                 # 📚 DOCUMENTACIÓN TÉCNICA
+│   ├── README.md               # Índice de documentación
+│   ├── diagramas_arquitectura.html  # 6 diagramas Mermaid interactivos
+│   └── explicacion_archivos.md      # Diccionario completo del proyecto
+├── storage/                    # Logs, cache, uploads
+├── tests/                      # Tests Feature y Unit
+├── .env.example                # Plantilla de configuración
+├── composer.json               # Dependencias PHP
+├── package.json                # Dependencias JavaScript
+└── vite.config.js              # Configuración de build
 ```
 
-## 🔧 Personalización rápida (CSS)
+---
 
-```css
-:root {
-    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    --glass-bg: rgba(255, 255, 255, 0.25);
-    --glass-border: rgba(255, 255, 255, 0.18);
+## 📖 Documentación Técnica
+
+Este proyecto incluye **documentación exhaustiva** en la carpeta `documentos/`:
+
+### 🎨 Diagramas de Arquitectura ([Ver HTML](documentos/diagramas_arquitectura.html))
+- Arquitectura de Alto Nivel (Frontend → Backend → Database)
+- Mapa Completo de Tecnologías
+- Flujo de Datos (diagrama secuencial)
+- Modelo Entidad-Relación
+- Arquitectura Frontend (Vite pipeline)
+- Ciclo de Vida de Petición Laravel
+
+### 📚 Diccionario de Archivos ([Ver Markdown](documentos/explicacion_archivos.md))
+Explicación detallada de:
+- Archivos de configuración
+- Controladores y modelos
+- Sistema de rutas
+- Migraciones y seeders
+- JavaScript y Sass
+- Vistas Blade
+- Exportaciones y notificaciones
+
+### 📑 Guía de Referencia ([Ver Índice](documentos/README.md))
+- Stack tecnológico completo
+- Comandos útiles
+- Métricas del proyecto
+- Conceptos avanzados implementados
+
+---
+
+## 🔐 Seguridad
+
+✅ **CSRF Protection** en todos los formularios  
+✅ **Autenticación** con Laravel Auth  
+✅ **Autorización** con Policies (row-level security)  
+✅ **Passwords hasheados** con bcrypt  
+✅ **SQL Injection Prevention** vía Eloquent parametrizado  
+✅ **XSS Protection** con Blade escaping automático  
+✅ **Mass Assignment Protection** con `$fillable`  
+
+---
+
+## 🐛 Solución de Problemas
+
+### Error: "No application encryption key has been specified"
+```bash
+php artisan key:generate
+```
+
+### Error: "SQLSTATE[HY000]: General error: 1 no such table"
+```bash
+php artisan migrate:fresh --seed
+```
+
+### Error: "Vite manifest not found"
+```bash
+npm run build
+```
+
+### El calendario no carga eventos
+1. Verificar que `npm run dev` esté corriendo
+2. Hard reload del navegador: `Ctrl + Shift + R`
+3. Verificar permisos de usuario autenticado
+
+### Archivos adjuntos no se visualizan
+```bash
+php artisan storage:link
+```
+
+### Puerto 8000 ya está en uso
+```bash
+php artisan serve --port=8080
+```
+
+---
+
+## 🚢 Despliegue en Producción
+
+### 1. Configurar `.env` para producción
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://tudominio.com
+
+DB_CONNECTION=mysql
+# ... configuración MySQL producción
+```
+
+### 2. Optimizar para producción
+
+```bash
+# Compilar assets
+npm run build
+
+# Cache de configuración
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# Optimizar autoload
+composer install --optimize-autoloader --no-dev
+```
+
+### 3. Configurar servidor web
+
+**Nginx ejemplo:**
+```nginx
+server {
+    listen 80;
+    server_name tudominio.com;
+    root /var/www/agenda-escolar/public;
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-Content-Type-Options "nosniff";
+
+    index index.php;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
 }
 ```
 
+### 4. Configurar permisos
+
+```bash
+chmod -R 775 storage bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache
+```
+
+---
+
 ## 🤝 Contribución
 
-1. Haz fork
-2. Crea rama: `git checkout -b feature/mi-mejora`
-3. Commit: `git commit -m "feat: describe tu mejora"`
-4. Push: `git push origin feature/mi-mejora`
-5. Abre un Pull Request
+1. Fork del proyecto
+2. Crear rama feature: `git checkout -b feature/nueva-funcionalidad`
+3. Commit cambios: `git commit -m "feat: descripción del cambio"`
+4. Push a la rama: `git push origin feature/nueva-funcionalidad`
+5. Abrir Pull Request
+
+**Estándares de código:**
+- Seguir PSR-12 para PHP
+- ESLint para JavaScript
+- Comentarios en español
+
+---
 
 ## 📄 Licencia
 
-MIT. Ver `LICENSE`.
+Este proyecto está bajo la Licencia MIT. Ver archivo [LICENSE](LICENSE) para más detalles.
+
+---
 
 ## 👤 Autor
 
@@ -161,7 +471,36 @@ MIT. Ver `LICENSE`.
 
 - GitHub: [@Pachecosaurio](https://github.com/Pachecosaurio)
 - Email: Jafetpd.md24@universidadupp.edu.mx
+- Repositorio: [agenda-escolar](https://github.com/Pachecosaurio/agenda-escolar)
 
 ---
 
-⭐ Si este proyecto te resulta útil, ¡déjale una estrella! ⭐
+## 🙏 Agradecimientos
+
+- Laravel Community
+- FullCalendar.io
+- Vue.js Team
+- Bootstrap Team
+- Todos los contribuidores de las librerías utilizadas
+
+---
+
+## 📈 Roadmap Futuro
+
+- [ ] PWA con Service Workers para acceso offline
+- [ ] Notificaciones push en navegador
+- [ ] Internacionalización completa (i18n)
+- [ ] Modo oscuro
+- [ ] Integración con Google Calendar
+- [ ] Chat en tiempo real (WebSockets)
+- [ ] App móvil (Flutter/React Native)
+
+---
+
+⭐ **Si este proyecto te resulta útil, ¡déjale una estrella en GitHub!** ⭐
+
+---
+
+**Última actualización:** 28 de noviembre de 2025  
+**Versión:** 1.0.0  
+**Laravel:** 12.0 | **Vue:** 3.2.37 | **FullCalendar:** 5.11.5
