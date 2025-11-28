@@ -1,0 +1,48 @@
+// Estilos extraídos de resources/views/tasks/index.blade.php
+// Dependen de variables ya definidas en :root del layout
+
+.hero-section {
+  background: var(--primary-gradient);
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+}
+.hero-content { position: relative; z-index: 10; padding: 2rem 0; }
+.floating-elements { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1; }
+.floating-circle { position:absolute; border-radius:50%; background:rgba(255,255,255,.1); backdrop-filter:blur(10px); animation: float 6s ease-in-out infinite; }
+.floating-circle:nth-child(1){ width:100px; height:100px; top:20%; left:10%; animation-delay:0s; }
+.floating-circle:nth-child(2){ width:150px; height:150px; top:60%; right:15%; animation-delay:2s; }
+.floating-circle:nth-child(3){ width:80px; height:80px; bottom:20%; left:20%; animation-delay:4s; }
+@keyframes float { 0%,100% { transform:translateY(0) rotate(0deg);} 50% { transform:translateY(-20px) rotate(180deg);} }
+.glass-effect { background: var(--glass-bg); backdrop-filter: blur(20px); border:1px solid var(--glass-border); box-shadow: var(--shadow-lg); }
+.text-glow { text-shadow:0 0 20px rgba(255,255,255,.5); }
+.text-shadow { text-shadow:0 2px 4px rgba(0,0,0,.3); }
+.filter-card { background:rgba(255,255,255,.95); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,.2); }
+.stats-card { background:linear-gradient(135deg, rgba(255,255,255,.2) 0%, rgba(255,255,255,.1) 100%); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,.2); transition:var(--transition-smooth); }
+.stats-card:hover { transform:translateY(-5px); box-shadow:var(--shadow-xl); border-color:rgba(255,255,255,.4); }
+.content-card { background:rgba(255,255,255,.95); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,.2); transition:var(--transition-smooth); }
+.action-btn { background:linear-gradient(135deg,#ff9800 0%, #f57c00 100%); border:none; transition:var(--transition-smooth); position:relative; overflow:hidden; }
+.action-btn:hover { transform:translateY(-3px); box-shadow:0 10px 25px rgba(255,152,0,.4); background:linear-gradient(135deg,#f57c00 0%, #ef6c00 100%); }
+.action-button { position:relative; overflow:hidden; transition:var(--transition-smooth); border:none; }
+.action-button:hover { transform:translateY(-5px) scale(1.05); }
+.action-button.hovering { animation:pulse 1s infinite; }
+@keyframes pulse { 0% { transform:translateY(-5px) scale(1.05);} 50% { transform:translateY(-7px) scale(1.08);} 100% { transform:translateY(-5px) scale(1.05);} }
+@keyframes ripple { to { transform:scale(4); opacity:0;} }
+.task-card { background:linear-gradient(135deg, rgba(255,255,255,.9) 0%, rgba(255,255,255,.8) 100%); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,.2); transition:var(--transition-smooth); }
+.task-card:hover { transform:translateY(-8px) scale(1.02); box-shadow:var(--shadow-lg); border-color:rgba(255,152,0,.3); }
+.task-card .card-header { min-height:80px; display:flex; align-items:center; }
+.task-card .card-header h5 { word-break:break-word; overflow-wrap:break-word; hyphens:auto; line-height:1.3; margin-bottom:.5rem; max-width:100%; }
+.task-card .card-header .flex-grow-1 { min-width:0; }
+.task-card .card-header .flex-shrink-0 { margin-left:1rem; }
+@media (max-width:576px){ .task-card .card-header{ min-height:90px; padding:1rem !important;} .task-card .card-header h5{ font-size:1rem !important; line-height:1.2;} .task-card .card-header .flex-shrink-0{ margin-left:.5rem;} }
+.priority-badge { background:linear-gradient(135deg,#ff9800 0%, #f57c00 100%); color:#fff; font-weight:600; border-radius:20px; padding:6px 12px; font-size:.8rem; }
+.status-badge { font-weight:600; border-radius:20px; padding:6px 12px; font-size:.8rem; }
+.status-pending { background:linear-gradient(135deg,#ffc107 0%, #ff8f00 100%); color:#212529; }
+.status-completed { background:linear-gradient(135deg,#28a745 0%, #20c997 100%); color:#fff; }
+.task-stats .stats-card { background:linear-gradient(135deg, rgba(255,152,0,.1) 0%, rgba(255,152,0,.05) 100%); }
+.icon-wrapper { background:rgba(255,255,255,.2); backdrop-filter:blur(10px); border:2px solid rgba(255,255,255,.3); }
+.with-ring { position:relative; }
+.with-ring::before { content:''; position:absolute; top:-10px; left:-10px; right:-10px; bottom:-10px; border:2px solid rgba(255,255,255,.2); border-radius:50%; animation:ring-pulse 3s infinite; }
+@keyframes ring-pulse { 0% { transform:scale(1); opacity:1;} 100% { transform:scale(1.2); opacity:0;} }
+@media (max-width:768px){ .hero-section { min-height:auto; padding:2rem 0;} .floating-circle { display:none;} }

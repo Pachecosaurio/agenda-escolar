@@ -51,41 +51,45 @@ function loadPreferences(){
 }
 function savePreferences(p){ localStorage.setItem(LS_KEY, JSON.stringify(p)); }
 
-// Esperar a que FullCalendar esté completamente cargado
+// Listener principal: evento custom disparado tras carga del script CDN
 document.addEventListener('fullcalendarReady', function() {
     console.log('🎯 Evento fullcalendarReady recibido, inicializando calendario...');
     initCalendar();
 });
 
-// Fallback: si el evento no se dispara, intentar después de DOM loaded
+function attemptInitCalendarImmediate(reason){
+    if(calendar) return; // ya inicializado
+    if(typeof FullCalendar !== 'undefined'){
+        console.log('⚡ Inicialización inmediata ('+reason+')');
+        initCalendar();
+        return true;
+    }
+    return false;
+}
+
+// Si el script se carga DESPUÉS de DOMContentLoaded, el listener no se dispara: cubrir ese caso
+if(document.readyState === 'interactive' || document.readyState === 'complete'){
+    // Intento rápido directo
+    if(!attemptInitCalendarImmediate('readyState post-load')){
+        // Poll corto mientras llega la librería (por carga diferida en layout)
+        let tries = 0;
+        const poll = setInterval(()=>{
+            if(attemptInitCalendarImmediate('poll post-load')){ clearInterval(poll); }
+            else if(++tries > 20){ console.error('⛔ FullCalendar no disponible tras 20 intentos (10s)'); clearInterval(poll); }
+        },500);
+    }
+}
+
+// Fallback normal: si el script se carga antes del evento DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('📄 DOM cargado, verificando FullCalendar...');
-    
-    // Esperar un poco y verificar si FullCalendar está disponible
-    setTimeout(function() {
-        if (typeof FullCalendar !== 'undefined') {
-            console.log('✅ FullCalendar detectado después de DOM loaded');
-            initCalendar();
-        } else {
-            console.log('⏳ FullCalendar no disponible, esperando...');
-            // Intentar cada 500ms hasta que esté disponible
-            const checkInterval = setInterval(function() {
-                if (typeof FullCalendar !== 'undefined') {
-                    console.log('✅ FullCalendar finalmente disponible');
-                    clearInterval(checkInterval);
-                    initCalendar();
-                }
-            }, 500);
-            
-            // Timeout después de 10 segundos
-            setTimeout(function() {
-                clearInterval(checkInterval);
-                if (typeof FullCalendar === 'undefined') {
-                    console.error('❌ Timeout: FullCalendar no se cargó en 10 segundos');
-                }
-            }, 10000);
-        }
-    }, 100);
+    console.log('📄 DOMContentLoaded capturado (calendar.js)');
+    if(attemptInitCalendarImmediate('DOMContentLoaded')) return;
+    console.log('⏳ FullCalendar aún no cargado tras DOMContentLoaded, iniciando espera...');
+    let tries = 0;
+    const interval = setInterval(()=>{
+        if(attemptInitCalendarImmediate('interval DOMContentLoaded')){ clearInterval(interval); }
+        else if(++tries > 20){ console.error('❌ Timeout: FullCalendar no se cargó en ~10s'); clearInterval(interval); }
+    },500);
 });
 
 /**

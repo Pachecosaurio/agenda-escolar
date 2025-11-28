@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagramas de Arquitectura - Agenda Escolar</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #667eea;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .diagram-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .diagram-section h2 {
+            color: #764ba2;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .diagram-description {
+            color: #555;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            background: #f8f9fa;
+            padding: 1rem;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+        }
+        
+        .mermaid {
+            background: #fafafa;
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .tech-legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .tech-item {
+            background: #f0f0f0;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .tech-item strong {
+            color: #667eea;
+        }
+        
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 3rem;
+            padding: 1rem;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 1rem;
+            }
+            .diagram-section {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Documentación Técnica de Arquitectura</h1>
+            <p class="subtitle">Sistema de Agenda Escolar - Análisis Completo de Arquitectura y Flujo de Datos</p>
+        </header>
+
+        <!-- Diagrama 1: Arquitectura de Alto Nivel -->
+        <section class="diagram-section">
+            <h2>1. Arquitectura de Alto Nivel del Sistema</h2>
+            <p class="diagram-description">
+                Este diagrama muestra la arquitectura general del sistema, destacando las tres capas principales: 
+                <strong>Frontend</strong> (interfaz de usuario con Vue.js y FullCalendar), 
+                <strong>Backend</strong> (API REST en Laravel con controladores y modelos), y 
+                <strong>Base de Datos</strong> (SQLite/MySQL con tablas relacionales). 
+                Las flechas indican el flujo de comunicación HTTP/HTTPS entre las capas.
+            </p>
+            <div class="mermaid">
+graph TB
+    subgraph "🖥️ CAPA DE PRESENTACIÓN - FRONTEND"
+        A[Navegador Web del Usuario]
+        B["Vue.js 3.2.37<br>Framework SPA"]
+        C["FullCalendar 5.11.5<br>Calendario Interactivo"]
+        D["Bootstrap 5.3.8<br>Framework CSS"]
+        E["Vite 6.0<br>Build Tool"]
+    end
+    
+    subgraph "⚙️ CAPA DE APLICACIÓN - BACKEND"
+        F["Laravel 12.0<br>Framework PHP"]
+        G["Router Web<br>routes/web.php"]
+        H["Middleware Auth<br>Autenticación"]
+        
+        subgraph "Controladores"
+            I[TaskController]
+            J[EventController]
+            K[PaymentController]
+            L[HomeController]
+            M[NotificationsController]
+        end
+        
+        subgraph "Modelos Eloquent"
+            N[User Model]
+            O[Task Model]
+            P[Event Model]
+            Q[Payment Model]
+        end
+        
+        R["AppServiceProvider<br>View Composers"]
+        S["Políticas de Autorización"]
+    end
+    
+    subgraph "💾 CAPA DE PERSISTENCIA - BASE DE DATOS"
+        T["(SQLite/MySQL<br>Base de Datos)"]
+        U[Tabla: users]
+        V[Tabla: tasks]
+        W[Tabla: events]
+        X[Tabla: payments]
+        Y[Tabla: notifications]
+    end
+    
+    subgraph "🔧 HERRAMIENTAS DE DESARROLLO"
+        Z["Composer<br>Gestor de Dependencias PHP"]
+        AA["NPM<br>Gestor de Dependencias JS"]
+        AB["Vite Dev Server<br>HMR y Build"]
+    end
+    
+    A -->|HTTP/HTTPS| F
+    B --> C
+    B --> D
+    E --> B
+    E --> C
+    
+    F --> G
+    G --> H
+    H --> I
+    H --> J
+    H --> K
+    H --> L
+    H --> M
+    
+    I --> O
+    J --> P
+    K --> Q
+    L --> N
+    M --> N
+    
+    R -.->|Inyecta Datos| I
+    R -.->|Inyecta Datos| J
+    S -.->|Valida Permisos| I
+    S -.->|Valida Permisos| K
+    
+    N --> U
+    O --> V
+    P --> W
+    Q --> X
+    
+    T --> U
+    T --> V
+    T --> W
+    T --> X
+    T --> Y
+    
+    Z -.->|Instala| F
+    AA -.->|Instala| B
+    AB -.->|Compila| E
+    
+    style A fill:#e3f2fd
+    style F fill:#fff3e0
+    style T fill:#f3e5f5
+    style E fill:#e8f5e9
+            </div>
+        </section>
+
+        <!-- Diagrama 2: Mapa de Tecnologías -->
+        <section class="diagram-section">
+            <h2>2. Mapa Completo de Tecnologías y Dependencias</h2>
+            <p class="diagram-description">
+                Visualización exhaustiva de todas las librerías, frameworks y herramientas utilizadas en el proyecto.
+                Muestra las relaciones de dependencia entre paquetes de Backend (PHP/Composer) y Frontend (JavaScript/NPM),
+                así como las herramientas de desarrollo y exportación de datos.
+            </p>
+            <div class="mermaid">
+graph LR
+    subgraph "🎨 FRONTEND STACK"
+        VUE[Vue.js 3.2.37]
+        FC[FullCalendar 5.11.5]
+        BS[Bootstrap 5.3.8]
+        SASS[Sass 1.56.1]
+        AXIOS[Axios 1.11.0]
+        POPPER[@popperjs/core 2.11.8]
+        
+        FC_CORE[@fullcalendar/core]
+        FC_DAY[@fullcalendar/daygrid]
+        FC_TIME[@fullcalendar/timegrid]
+        FC_INT[@fullcalendar/interaction]
+    end
+    
+    subgraph "🔨 BUILD TOOLS"
+        VITE[Vite 6.0]
+        VITE_VUE[@vitejs/plugin-vue]
+        VITE_LAR[laravel-vite-plugin]
+        TAILWIND[Tailwind CSS 4.0]
+    end
+    
+    subgraph "🐘 BACKEND STACK - PHP"
+        LARAVEL[Laravel 12.0]
+        TINKER[Laravel Tinker 2.10]
+        UI[Laravel UI 4.6]
+        DOMPDF[barryvdh/dompdf 3.1]
+        EXCEL[maatwebsite/excel 3.1]
+    end
+    
+    subgraph "🧪 TESTING & DEV"
+        PHPUNIT[PHPUnit 11.5.3]
+        FAKER[Faker 1.23]
+        PINT[Laravel Pint 1.24]
+        SAIL[Laravel Sail 1.41]
+        PAIL[Laravel Pail 1.2.2]
+        MOCKERY[Mockery 1.6]
+    end
+    
+    subgraph "🗄️ DATABASE"
+        ELOQUENT[Eloquent ORM]
+        SQLITE[SQLite / MySQL]
+        MIGRATIONS[Migrations System]
+        SEEDERS[Database Seeders]
+        FACTORIES[Model Factories]
+    end
+    
+    subgraph "🔐 SEGURIDAD & AUTH"
+        AUTH[Laravel Auth]
+        MIDDLEWARE[Middleware Stack]
+        POLICIES[Authorization Policies]
+        CSRF[CSRF Protection]
+    end
+    
+    VUE --> VITE
+    BS --> POPPER
+    FC --> FC_CORE
+    FC_CORE --> FC_DAY
+    FC_CORE --> FC_TIME
+    FC_CORE --> FC_INT
+    SASS --> VITE
+    
+    VITE --> VITE_VUE
+    VITE --> VITE_LAR
+    VITE_LAR --> LARAVEL
+    
+    LARAVEL --> ELOQUENT
+    LARAVEL --> AUTH
+    LARAVEL --> MIDDLEWARE
+    ELOQUENT --> SQLITE
+    ELOQUENT --> MIGRATIONS
+    
+    MIGRATIONS --> SEEDERS
+    SEEDERS --> FACTORIES
+    FACTORIES --> FAKER
+    
+    AUTH --> POLICIES
+    AUTH --> CSRF
+    
+    DOMPDF -.->|Exporta PDF| LARAVEL
+    EXCEL -.->|Exporta Excel| LARAVEL
+    
+    PHPUNIT -.->|Pruebas| LARAVEL
+    PINT -.->|Linting| LARAVEL
+    SAIL -.->|Docker Dev| LARAVEL
+    
+    AXIOS -.->|HTTP Client| VUE
+    
+    style LARAVEL fill:#ff6b6b,color:#fff
+    style VUE fill:#42b883,color:#fff
+    style VITE fill:#646cff,color:#fff
+    style SQLITE fill:#003b57,color:#fff
+    style FC fill:#3788d8,color:#fff
+            </div>
+            
+            <div class="tech-legend">
+                <div class="tech-item"><strong>Backend:</strong> Laravel 12, PHP 8.2+</div>
+                <div class="tech-item"><strong>Frontend:</strong> Vue.js 3, FullCalendar 5</div>
+                <div class="tech-item"><strong>Estilos:</strong> Bootstrap 5, Sass, Tailwind</div>
+                <div class="tech-item"><strong>Build:</strong> Vite 6 con HMR</div>
+                <div class="tech-item"><strong>Base de Datos:</strong> SQLite (dev), MySQL (prod)</div>
+                <div class="tech-item"><strong>Exportación:</strong> DomPDF, Maatwebsite Excel</div>
+                <div class="tech-item"><strong>HTTP Client:</strong> Axios 1.11</div>
+                <div class="tech-item"><strong>Testing:</strong> PHPUnit 11, Faker, Mockery</div>
+            </div>
+        </section>
+
+        <!-- Diagrama 3: Flujo de Datos -->
+        <section class="diagram-section">
+            <h2>3. Flujo de Datos: De la Petición del Usuario a la Base de Datos</h2>
+            <p class="diagram-description">
+                Este diagrama secuencial ilustra el viaje completo de una petición HTTP desde que el usuario interactúa 
+                con la interfaz hasta que recibe la respuesta. Incluye validación, autenticación, autorización, 
+                consultas a base de datos y renderizado de vistas Blade o respuestas JSON para el calendario.
+            </p>
+            <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant U as 👤 Usuario Navegador
+    participant V as 🎨 Vista Blade + Vue Component
+    participant R as 🛣️ Router web.php
+    participant M as 🔐 Middleware Auth
+    participant C as ⚙️ Controlador
+    participant P as 🛡️ Policy Autorización
+    participant MO as 📦 Modelo Eloquent
+    participant DB as 💾 Base de Datos
+    participant VS as 👁️ ViewComposer
+    participant B as 🌐 Respuesta
+
+    Note over U,B: FLUJO COMPLETO DE UNA PETICIÓN AUTENTICADA
+    
+    U->>+V: 1. Click en Ver Tareas o AJAX desde Calendario
+    V->>+R: 2. GET /tasks o /calendar/events
+    R->>+M: 3. Verificar sesión de usuario
+    
+    alt Usuario NO autenticado
+        M-->>U: Redirigir a /login
+    else Usuario autenticado
+        M->>+C: 4. Llamar método controlador (index, show, store)
+    end
+    
+    C->>+P: 5. Verificar políticas de autorización
+    
+    alt No autorizado
+        P-->>U: 403 Forbidden
+    else Autorizado
+        P->>C: Permiso concedido
+    end
+    
+    C->>+MO: 6. Consultar datos vía Eloquent
+    MO->>+DB: 7. Ejecutar SELECT SQL
+    DB-->>-MO: 8. Retornar filas de datos
+    MO-->>-C: 9. Retornar Collection de modelos
+    
+    C->>+VS: 10. View Composer inyecta datos próximos
+    VS->>DB: Consultar tareas próximas (3 días)
+    DB-->>VS: Retornar datos adicionales
+    VS-->>-C: Datos inyectados en vista
+    
+    alt Petición AJAX (Calendario)
+        C->>B: 11a. Retornar JSON con eventos
+        B-->>U: 12a. FullCalendar renderiza eventos
+    else Petición Web (Vista normal)
+        C->>B: 11b. Retornar vista Blade
+        B-->>U: 12b. HTML renderizado en navegador
+    end
+    
+    Note over U,B: FLUJO DE ESCRITURA (CREATE/UPDATE)
+    
+    U->>+V: Usuario envía formulario crear/editar tarea
+    V->>+R: POST /tasks o PATCH /tasks/{id}
+    R->>+M: Verificar CSRF Token y Auth
+    M->>+C: Llamar store() o update()
+    C->>C: Validar Request
+    
+    alt Validación falla
+        C-->>U: Redirigir con errores
+    else Validación OK
+        C->>+MO: Task::create o update
+        MO->>+DB: INSERT o UPDATE en tabla tasks
+        DB-->>-MO: Confirmar escritura
+        MO-->>-C: Retornar modelo creado/actualizado
+        C-->>-U: Redirigir con mensaje de éxito
+    end
+    
+    Note over U,B: EXPORTACIÓN DE DATOS
+    
+    U->>V: Click Exportar a Excel/PDF
+    V->>R: GET /tasks/export/excel
+    R->>M: Verificar autenticación
+    M->>C: TaskExportController::excel()
+    C->>MO: Obtener todas las tareas del usuario
+    MO->>DB: SELECT * FROM tasks
+    DB-->>MO: Retornar datos
+    C->>C: Generar archivo Excel
+    C-->>U: Descargar archivo .xlsx
+    
+    style U fill:#e3f2fd
+    style DB fill:#f3e5f5
+    style C fill:#fff3e0
+    style M fill:#ffebee
+    style P fill:#fce4ec
+            </div>
+        </section>
+
+        <!-- Diagrama 4: Modelo de Datos -->
+        <section class="diagram-section">
+            <h2>4. Modelo Entidad-Relación de la Base de Datos</h2>
+            <p class="diagram-description">
+                Diagrama ER que muestra las tablas principales, sus columnas clave y las relaciones entre entidades.
+                Todas las tablas de dominio (tasks, events, payments) están asociadas a la tabla users mediante 
+                claves foráneas, implementando un diseño multi-tenant a nivel de usuario.
+            </p>
+            <div class="mermaid">
+erDiagram
+    USERS ||--o{ TASKS : "tiene muchas"
+    USERS ||--o{ EVENTS : "crea"
+    USERS ||--o{ PAYMENTS : "registra"
+    USERS ||--o{ NOTIFICATIONS : "recibe"
+    EVENTS ||--o{ EVENTS : "recurrencia padre-hijo"
+    
+    USERS {
+        int id PK
+        string name
+        string email UK
+        string password
+        timestamp email_verified_at
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    TASKS {
+        int id PK
+        int user_id FK
+        string title
+        text description
+        date due_date
+        boolean completed
+        string attachment
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    EVENTS {
+        int id PK
+        int user_id FK
+        int parent_event_id FK
+        string title
+        text description
+        datetime start
+        datetime end
+        boolean is_recurring
+        string recurrence_type
+        int recurrence_interval
+        json recurrence_days
+        date recurrence_end_date
+        int recurrence_count
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    PAYMENTS {
+        int id PK
+        int user_id FK
+        string title
+        text description
+        decimal amount
+        string category
+        date due_date
+        date paid_date
+        string status
+        string payment_method
+        string reference
+        text notes
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+    }
+    
+    NOTIFICATIONS {
+        string id PK
+        string type
+        int notifiable_id
+        string notifiable_type
+        text data
+        timestamp read_at
+        timestamp created_at
+        timestamp updated_at
+    }
+            </div>
+        </section>
+
+        <!-- Diagrama 5: Arquitectura Frontend -->
+        <section class="diagram-section">
+            <h2>5. Arquitectura Frontend: Recursos JavaScript y CSS</h2>
+            <p class="diagram-description">
+                Estructura de archivos del frontend mostrando cómo Vite empaqueta los recursos. El archivo app.js 
+                inicializa Vue y Bootstrap, mientras calendar.js maneja específicamente la lógica de FullCalendar.
+                Los estilos están modularizados en parciales Sass con arquitectura @use.
+            </p>
+            <div class="mermaid">
+graph TB
+    subgraph "📂 resources/js/"
+        APP_JS["app.js<br>- Inicializa Vue 3<br>- Importa Bootstrap<br>- Monta componentes"]
+        BOOT_JS["bootstrap.js<br>- Configura Axios<br>- CSRF Token<br>- Window globals"]
+        CAL_JS["calendar.js<br>- Inicializa FullCalendar<br>- Event sources<br>- Filtros y preferencias<br>- LocalStorage"]
+        COMP["components/<br>ExampleComponent.vue"]
+    end
+    
+    subgraph "📂 resources/sass/"
+        APP_SCSS["app.scss<br>@use variables<br>@use components/tasks<br>@use layout/layout<br>@import bootstrap"]
+        VAR_SCSS["_variables.scss<br>- Colores<br>- Fuentes<br>- Breakpoints"]
+        TASK_SCSS["components/_tasks.scss<br>- Estilos hero tareas<br>- Animaciones<br>- Badges"]
+        LAY_SCSS["layout/_layout.scss<br>- Navbar<br>- Gradientes<br>- Utilidades"]
+        FOOT_SCSS["layout/_footer.scss<br>- Footer moderno"]
+    end
+    
+    subgraph "🔨 Vite Build Pipeline"
+        VITE_CONF["vite.config.js<br>- Laravel Plugin<br>- Vue Plugin<br>- Input: app.js,<br>calendar.js, app.scss"]
+        BUILD_DIR["public/build/<br>- manifest.json<br>- app-hash.js<br>- calendar-hash.js<br>- app-hash.css"]
+    end
+    
+    subgraph "🌐 Navegador"
+        BLADE["@vite Directive<br>en layouts/app.blade.php"]
+        RENDERED["HTML renderizado<br>con assets versionados"]
+    end
+    
+    APP_JS --> BOOT_JS
+    APP_JS --> COMP
+    CAL_JS -.->|"Importa CSS"| FCSS["FullCalendar CSS"]
+    
+    APP_SCSS --> VAR_SCSS
+    APP_SCSS --> TASK_SCSS
+    APP_SCSS --> LAY_SCSS
+    APP_SCSS --> FOOT_SCSS
+    
+    APP_JS --> VITE_CONF
+    CAL_JS --> VITE_CONF
+    APP_SCSS --> VITE_CONF
+    
+    VITE_CONF -->|"npm run build"| BUILD_DIR
+    VITE_CONF -->|"npm run dev"| VITE_DEV["Vite Dev Server<br>HMR en puerto 5174"]
+    
+    BUILD_DIR --> BLADE
+    VITE_DEV -.->|"Desarrollo"| BLADE
+    BLADE --> RENDERED
+    
+    style APP_JS fill:#ffd700
+    style CAL_JS fill:#ffd700
+    style APP_SCSS fill:#ff69b4
+    style VITE_CONF fill:#646cff,color:#fff
+    style BUILD_DIR fill:#90EE90
+            </div>
+        </section>
+
+        <!-- Diagrama 6: Ciclo de Vida de una Petición -->
+        <section class="diagram-section">
+            <h2>6. Ciclo de Vida Completo: Desde Routing hasta Response</h2>
+            <p class="diagram-description">
+                Representación detallada del pipeline de Laravel mostrando cada paso que atraviesa una petición HTTP:
+                routing, middleware stack, controller resolution, service provider injection, database queries, 
+                y finalmente la generación de la respuesta HTTP.
+            </p>
+            <div class="mermaid">
+graph TD
+    START(["🌐 Petición HTTP<br>GET /tasks"])
+    
+    ROUTE{"🛣️ Router<br>routes/web.php<br>Coincide ruta?"}
+    
+    MW_STACK["🔐 Middleware Stack"]
+    MW_AUTH["Auth Middleware<br>Verificar sesión"]
+    MW_CSRF["CSRF Verification<br>POST/PUT/DELETE"]
+    MW_CUSTOM["Middleware personalizados"]
+    
+    CONTROLLER["⚙️ Controller Resolution<br>TaskController@index"]
+    
+    INJECT["💉 Dependency Injection<br>Request"]
+    
+    POLICY{"🛡️ Authorization Policy<br>TaskPolicy::view<br>Autorizado?"}
+    
+    LOGIC["📊 Lógica de Negocio<br>Filtros, búsqueda,<br>paginación"]
+    
+    ELOQUENT["📦 Query con Eloquent<br>Task::where"]
+    
+    DB_QUERY["(💾 Consulta SQL<br>SELECT * FROM tasks)"]
+    
+    COLLECTION["📚 Eloquent Collection<br>Colección de modelos"]
+    
+    VIEW_COMP["👁️ View Composer<br>AppServiceProvider<br>Inyectar tasksSoon"]
+    
+    RENDER{"🎨 Tipo de Respuesta"}
+    
+    JSON["JSON Response<br>return response()->json()"]
+    
+    BLADE["Vista Blade<br>view tasks.index"]
+    
+    COMPILE["⚡ Compilar Blade<br>a PHP puro"]
+    
+    RESPONSE(["📤 HTTP Response<br>HTML o JSON"])
+    
+    END(["✅ Respuesta enviada<br>al navegador"])
+    
+    START --> ROUTE
+    
+    ROUTE -->|"No coincide"| ERROR_404["❌ 404 Not Found"]
+    ROUTE -->|"Coincide"| MW_STACK
+    
+    MW_STACK --> MW_AUTH
+    MW_AUTH -->|"No autenticado"| REDIRECT_LOGIN["🔄 Redirect /login"]
+    MW_AUTH -->|"Autenticado"| MW_CSRF
+    MW_CSRF --> MW_CUSTOM
+    MW_CUSTOM --> CONTROLLER
+    
+    CONTROLLER --> INJECT
+    INJECT --> POLICY
+    
+    POLICY -->|"No autorizado"| ERROR_403["❌ 403 Forbidden"]
+    POLICY -->|"Autorizado"| LOGIC
+    
+    LOGIC --> ELOQUENT
+    ELOQUENT --> DB_QUERY
+    DB_QUERY --> COLLECTION
+    
+    COLLECTION --> VIEW_COMP
+    VIEW_COMP --> RENDER
+    
+    RENDER -->|"API Request"| JSON
+    RENDER -->|"Web Request"| BLADE
+    
+    BLADE --> COMPILE
+    COMPILE --> RESPONSE
+    JSON --> RESPONSE
+    
+    RESPONSE --> END
+    
+    ERROR_404 --> END
+    REDIRECT_LOGIN --> END
+    ERROR_403 --> END
+    
+    style START fill:#e3f2fd
+    style END fill:#c8e6c9
+    style ERROR_404 fill:#ffcdd2
+    style ERROR_403 fill:#ffcdd2
+    style DB_QUERY fill:#f3e5f5
+    style CONTROLLER fill:#fff3e0
+    style MW_AUTH fill:#ffebee
+            </div>
+        </section>
+
+        <footer>
+            <p>📅 Generado automáticamente • Sistema Agenda Escolar v1.0 • Laravel 12 + Vue 3</p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.9;">
+                Documentación técnica completa de arquitectura, tecnologías y flujos de datos
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            },
+            sequence: {
+                diagramMarginX: 50,
+                diagramMarginY: 10,
+                actorMargin: 50,
+                width: 150,
+                height: 65,
+                boxMargin: 10,
+                boxTextMargin: 5,
+                noteMargin: 10,
+                messageMargin: 35
+            },
+            er: {
+                useMaxWidth: true
+            }
+        });
+    </script>
+</body>
+</html>

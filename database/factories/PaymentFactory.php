@@ -30,18 +30,36 @@ class PaymentFactory extends Factory
             $status = 'overdue';
         }
 
+        $titulos = [
+            'Pago de colegiatura', 'Cuota laboratorio', 'Materiales didácticos', 'Servicio biblioteca',
+            'Taller de refuerzo', 'Excursión académica', 'Plataforma virtual', 'Cuota de mantenimiento',
+            'Certificado oficial', 'Inscripción anual'
+        ];
+        $descripciones = [
+            'Corresponde al periodo académico vigente.',
+            'Incluye uso de equipos y reactivos controlados.',
+            'Compra grupal de recursos impresos y digitales.',
+            'Acceso extendido y reservas anticipadas.',
+            'Sesiones adicionales de apoyo dirigidas.',
+            'Transporte y entrada incluidos en la cuota.',
+            'Renovación de licencia y cuentas activas.',
+            'Aportes para conservación de instalaciones.',
+            'Documento requerido para trámites escolares.',
+            'Registro oficial del ciclo educativo.'
+        ];
+
         return [
             'user_id' => User::factory(),
-            'title' => ucfirst(fake()->words(3, true)),
-            'description' => fake()->boolean(40) ? fake()->sentence() : null,
+            'title' => fake()->randomElement($titulos),
+            'description' => fake()->boolean(45) ? fake()->randomElement($descripciones) : null,
             'amount' => fake()->randomFloat(2, 10, 500),
             'category' => fake()->randomElement($categories),
             'due_date' => $dueDate->toDateString(),
             'paid_date' => $paidDate?->toDateString(),
             'status' => $status,
-            'payment_method' => $status === 'paid' ? fake()->randomElement(['cash','card','transfer','online']) : null,
+            'payment_method' => $status === 'paid' ? fake()->randomElement(['efectivo','tarjeta','transferencia','en_linea']) : null,
             'reference' => $status === 'paid' ? strtoupper(Str::random(10)) : null,
-            'notes' => fake()->boolean(30) ? fake()->sentence(8) : null,
+            'notes' => fake()->boolean(30) ? fake()->randomElement($descripciones) : null,
         ];
     }
 
@@ -53,7 +71,7 @@ class PaymentFactory extends Factory
             return [
                 'status' => 'paid',
                 'paid_date' => $paidDate->toDateString(),
-                'payment_method' => 'transfer',
+                'payment_method' => 'transferencia',
                 'reference' => strtoupper(Str::random(10))
             ];
         });

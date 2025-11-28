@@ -724,7 +724,7 @@ window.routes = {
     paymentsCalendarEvents: '{{ route("payments.calendar-events") }}'
 };
 </script>
-<script src="{{ asset('js/calendar.js') }}"></script>
+@vite('resources/js/calendar.js')
 <!-- Script para exportación ICS dentro del modal -->
 <script>
 document.addEventListener('DOMContentLoaded', ()=>{

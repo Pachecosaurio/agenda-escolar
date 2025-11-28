@@ -8,6 +8,7 @@ export default defineConfig({
             input: [
                 'resources/sass/app.scss',
                 'resources/js/app.js',
+                'resources/js/calendar.js', // añadido para manifest de calendario
             ],
             refresh: true,
         }),

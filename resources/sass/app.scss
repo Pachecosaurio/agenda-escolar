@@ -1,8 +1,12 @@
-// Fonts
+// Orden requerido: primero @use (variables globales primero)
+@use 'variables' as *;
+@use 'components/tasks';
+@use 'layout/layout';
+@use 'layout/footer';
+
+// Fuentes externas (permitido después de @use)
 @import url('https://fonts.bunny.net/css?family=Nunito');
 
-// Variables
-@import 'variables';
-
-// Bootstrap
+// Bootstrap: se mantiene @import porque la librería interna aún lo utiliza.
+// Cuando Bootstrap publique versión totalmente compatible con @use podremos migrar.
 @import 'bootstrap/scss/bootstrap';

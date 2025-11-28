@@ -1,0 +1,14 @@
+// Extraído de resources/views/layouts/app.blade.php (bloque de footer)
+
+/* Footer simplificado sin wave */
+.modern-footer { background:#fff; border-top:1px solid #e2e8f0; box-shadow:0 -4px 12px rgba(0,0,0,.05); }
+.modern-footer .footer-inner { position:relative; }
+.modern-footer .brand-icon { width:46px; height:46px; background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; border-radius:50%; font-size:1.1rem; box-shadow:0 4px 12px rgba(102,126,234,.35); animation:brandPulse 3s ease-in-out infinite; }
+@keyframes brandPulse {0%,100%{transform:scale(1);}50%{transform:scale(1.06);} }
+.modern-footer .brand-name { font-weight:700; background:linear-gradient(135deg,#667eea,#764ba2); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.modern-footer .brand-tagline { font-size:.75rem; color:#666; }
+.modern-footer .copyright-text { font-size:.8rem; color:#555; }
+.modern-footer .made-with { font-size:.7rem; color:#777; }
+.modern-footer .heart-pulse { color:#ff6b6b; animation:heartbeat 1.6s ease-in-out infinite; }
+@keyframes heartbeat {0%,100%{transform:scale(1);}50%{transform:scale(1.25);} }
+@media (max-width:767.98px){ .modern-footer .footer-inner{flex-direction:column !important; text-align:center;} }
