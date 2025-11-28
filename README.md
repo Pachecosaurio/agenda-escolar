@@ -364,10 +364,56 @@ php artisan migrate:fresh --seed
 npm run build
 ```
 
-### El calendario no carga eventos
-1. Verificar que `npm run dev` esté corriendo
-2. Hard reload del navegador: `Ctrl + Shift + R`
-3. Verificar permisos de usuario autenticado
+### 🔴 CRÍTICO: El calendario no carga eventos o muestra error "Please import the top-level fullcalendar lib before attempting to import a plugin"
+
+**Causa:** El navegador tiene en caché el build antiguo cuando FullCalendar se cargaba por CDN. Ahora se empaqueta con Vite/npm.
+
+**Solución:**
+
+1. **Asegurarse que Vite dev server esté corriendo:**
+   ```bash
+   npm run dev
+   ```
+   Debe mostrar: `VITE v6.4.1 ready in XXX ms` y `Local: http://localhost:5173/` (o 5174)
+
+2. **Limpiar caché del navegador completamente:**
+   - **Chrome/Edge:** `Ctrl + Shift + Delete` → Seleccionar "Imágenes y archivos en caché" → Limpiar
+   - **Firefox:** `Ctrl + Shift + Delete` → Seleccionar "Caché" → Limpiar ahora
+   
+   O mejor aún:
+
+3. **Hard reload (Recarga fuerte):**
+   ```
+   Ctrl + Shift + R  (Windows/Linux)
+   Cmd + Shift + R   (Mac)
+   ```
+
+4. **Si el problema persiste, abrir en modo incógnito:**
+   ```
+   Ctrl + Shift + N  (Chrome/Edge)
+   Ctrl + Shift + P  (Firefox)
+   ```
+
+5. **Verificar que los assets se cargan desde Vite:**
+   - Abrir DevTools (F12)
+   - Pestaña Network
+   - Recargar página
+   - Buscar `calendar.js` - debe venir de `http://localhost:5173/@vite/...` o similar
+   - Si viene de `/public/js/calendar.js`, significa que está cargando versión vieja
+
+6. **En producción (después de `npm run build`):**
+   ```bash
+   # Limpiar caché de Laravel
+   php artisan cache:clear
+   php artisan view:clear
+   php artisan config:clear
+   
+   # Regenerar manifest de Vite
+   npm run build
+   ```
+
+**¿Por qué pasa esto?**  
+El proyecto anteriormente cargaba FullCalendar desde CDN (archivos estáticos en `public/js/calendar.js`). Ahora se empaqueta con Vite y npm para mejor rendimiento y control de versiones. Los navegadores cachean agresivamente JavaScript, por lo que mantienen la versión antigua hasta que se limpia la caché.
 
 ### Archivos adjuntos no se visualizan
 ```bash
