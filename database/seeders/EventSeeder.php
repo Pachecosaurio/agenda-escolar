@@ -17,7 +17,7 @@ class EventSeeder extends Seeder
         }
 
         foreach ($users as $user) {
-            Event::factory()->count(10)->create([ 'user_id' => $user->id ]);
+            Event::factory()->count(5)->create([ 'user_id' => $user->id ]);
         }
     }
 }

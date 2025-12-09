@@ -17,7 +17,7 @@ class TaskSeeder extends Seeder
         }
 
         foreach ($users as $user) {
-            Task::factory()->count(12)->create([ 'user_id' => $user->id ]);
+            Task::factory()->count(5)->create([ 'user_id' => $user->id ]);
         }
     }
 }

@@ -10,7 +10,7 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Demo user
+        // Demo user (único usuario del sistema)
         User::updateOrCreate(
             ['email' => 'demo@example.com'],
             [
@@ -19,8 +19,5 @@ class UserSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
-
-        // Additional random users
-        User::factory()->count(4)->create();
     }
 }

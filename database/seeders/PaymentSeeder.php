@@ -17,12 +17,10 @@ class PaymentSeeder extends Seeder
         }
 
         foreach ($users as $user) {
-            // Base random payments
-            Payment::factory()->count(10)->create([ 'user_id' => $user->id ]);
-
-            // Ensure variety
-            Payment::factory()->count(3)->overdue()->create([ 'user_id' => $user->id ]);
-            Payment::factory()->count(4)->paid()->create([ 'user_id' => $user->id ]);
+            // 5 pagos total: 3 pending, 1 overdue, 1 paid
+            Payment::factory()->count(3)->create([ 'user_id' => $user->id ]);
+            Payment::factory()->count(1)->overdue()->create([ 'user_id' => $user->id ]);
+            Payment::factory()->count(1)->paid()->create([ 'user_id' => $user->id ]);
         }
     }
 }

@@ -29,11 +29,10 @@ class NotificationSeeder extends Seeder
         ];
 
         foreach ($users as $user) {
-            foreach (range(1, 8) as $i) {
+            foreach (range(1, 5) as $i) {
                 $pick = fake()->randomElement($samples);
                 $title = $pick[0];
                 $msg = $pick[1] . ' Ref: #' . Str::upper(Str::random(6));
-                // 1-2 read notifications, rest unread
                 $user->notify(new GeneralNotification($title, $msg));
             }
         }
