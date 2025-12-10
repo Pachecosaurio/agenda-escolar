@@ -176,81 +176,99 @@ class EventController extends Controller
      */
     public function apiEvents(Request $request)
     {
-        $userId = Auth::id();
-        // FullCalendar envía 'start' y 'end' en ISO8601
-        $rangeStart = $request->query('start') ? Carbon::parse($request->query('start')) : Carbon::now()->startOfMonth();
-        $rangeEnd = $request->query('end') ? Carbon::parse($request->query('end')) : Carbon::now()->endOfMonth();
+        try {
+            $userId = Auth::id();
+            // FullCalendar envía 'start' y 'end' en ISO8601
+            $rangeStart = $request->query('start') ? Carbon::parse($request->query('start')) : Carbon::now()->startOfMonth();
+            $rangeEnd = $request->query('end') ? Carbon::parse($request->query('end')) : Carbon::now()->endOfMonth();
 
-        $results = [];
+            $results = [];
 
-        // Eventos (expandir recurrencia on-the-fly)
-        $events = Event::where('user_id', $userId)
-            ->whereNull('parent_event_id') // Evitar duplicados: no incluir hijos generados
-            ->get();
-        foreach ($events as $event) {
-            if ($event->is_recurring && $event->parent_event_id === null) {
-                $occurs = $event->occurrencesBetween($rangeStart, $rangeEnd);
-                foreach ($occurs as $idx => $occ) {
-                    $results[] = [
-                        'id' => 'event_' . $event->id . '_occ_' . $idx,
-                        'title' => $event->title,
-                        'start' => $occ['start']->toIso8601String(),
-                        'end' => $occ['end']->toIso8601String(),
-                        'description' => $event->description,
-                        'extendedProps' => [
-                            'type' => 'event',
-                            'description' => $event->description,
-                            'url' => route('events.show', $event),
-                        ],
-                        'backgroundColor' => '#667eea',
-                        'borderColor' => '#764ba2',
-                    ];
-                }
-            } else {
-                // Evento simple (o generado existente)
-                $start = $event->start instanceof Carbon ? $event->start : Carbon::parse($event->start);
-                $end = $event->end ? ($event->end instanceof Carbon ? $event->end : Carbon::parse($event->end)) : $start;
-                if ($start <= $rangeEnd && $end >= $rangeStart) {
-                    $results[] = [
-                        'id' => 'event_' . $event->id,
-                        'title' => $event->title,
-                        'start' => $start->toIso8601String(),
-                        'end' => $end->toIso8601String(),
-                        'description' => $event->description,
-                        'extendedProps' => [
-                            'type' => 'event',
-                            'description' => $event->description,
-                            'url' => route('events.show', $event),
-                        ],
-                        'backgroundColor' => '#667eea',
-                        'borderColor' => '#764ba2',
-                    ];
+            // Eventos (expandir recurrencia on-the-fly)
+            $events = Event::where('user_id', $userId)
+                ->whereNull('parent_event_id') // Evitar duplicados: no incluir hijos generados
+                ->get();
+            
+            foreach ($events as $event) {
+                try {
+                    if ($event->is_recurring && $event->parent_event_id === null) {
+                        $occurs = $event->occurrencesBetween($rangeStart, $rangeEnd);
+                        foreach ($occurs as $idx => $occ) {
+                            $results[] = [
+                                'id' => 'event_' . $event->id . '_occ_' . $idx,
+                                'title' => $event->title,
+                                'start' => $occ['start']->toIso8601String(),
+                                'end' => $occ['end']->toIso8601String(),
+                                'description' => $event->description,
+                                'extendedProps' => [
+                                    'type' => 'event',
+                                    'description' => $event->description,
+                                    'url' => route('events.show', $event),
+                                ],
+                                'backgroundColor' => '#667eea',
+                                'borderColor' => '#764ba2',
+                            ];
+                        }
+                    } else {
+                        // Evento simple (o generado existente)
+                        $start = $event->start instanceof Carbon ? $event->start : Carbon::parse($event->start);
+                        $end = $event->end ? ($event->end instanceof Carbon ? $event->end : Carbon::parse($event->end)) : $start;
+                        if ($start <= $rangeEnd && $end >= $rangeStart) {
+                            $results[] = [
+                                'id' => 'event_' . $event->id,
+                                'title' => $event->title,
+                                'start' => $start->toIso8601String(),
+                                'end' => $end->toIso8601String(),
+                                'description' => $event->description,
+                                'extendedProps' => [
+                                    'type' => 'event',
+                                    'description' => $event->description,
+                                    'url' => route('events.show', $event),
+                                ],
+                                'backgroundColor' => '#667eea',
+                                'borderColor' => '#764ba2',
+                            ];
+                        }
+                    }
+                } catch (\Exception $e) {
+                    // Log error pero continúa con otros eventos
+                    \Log::warning('Error procesando evento ' . $event->id . ': ' . $e->getMessage());
+                    continue;
                 }
             }
-        }
 
-        // Tareas (filtrar por rango para no sobrecargar)
-        $tasks = \App\Models\Task::where('user_id', $userId)
-            ->whereNotNull('due_date')
-            ->whereBetween('due_date', [$rangeStart->toDateTimeString(), $rangeEnd->toDateTimeString()])
-            ->get();
-        foreach ($tasks as $task) {
-            $results[] = [
-                'id' => 'task_' . $task->id,
-                'title' => '[Tarea] ' . $task->title,
-                'start' => Carbon::parse($task->due_date)->toIso8601String(),
-                'end' => Carbon::parse($task->due_date)->toIso8601String(),
-                'description' => $task->description,
-                'extendedProps' => [
-                    'type' => 'task',
-                    'description' => $task->description ?? '',
-                    'url' => route('tasks.show', $task),
-                ],
-                'backgroundColor' => '#ffd700',
-                'borderColor' => '#ffed4e',
-            ];
-        }
+            // Tareas (filtrar por rango para no sobrecargar)
+            $tasks = \App\Models\Task::where('user_id', $userId)
+                ->whereNotNull('due_date')
+                ->whereBetween('due_date', [$rangeStart->toDateTimeString(), $rangeEnd->toDateTimeString()])
+                ->get();
+            
+            foreach ($tasks as $task) {
+                try {
+                    $results[] = [
+                        'id' => 'task_' . $task->id,
+                        'title' => '[Tarea] ' . $task->title,
+                        'start' => Carbon::parse($task->due_date)->toIso8601String(),
+                        'end' => Carbon::parse($task->due_date)->toIso8601String(),
+                        'description' => $task->description,
+                        'extendedProps' => [
+                            'type' => 'task',
+                            'description' => $task->description ?? '',
+                            'url' => route('tasks.show', $task),
+                        ],
+                        'backgroundColor' => '#ffd700',
+                        'borderColor' => '#ffed4e',
+                    ];
+                } catch (\Exception $e) {
+                    \Log::warning('Error procesando tarea ' . $task->id . ': ' . $e->getMessage());
+                    continue;
+                }
+            }
 
-        return response()->json($results);
+            return response()->json($results);
+        } catch (\Exception $e) {
+            \Log::error('Error en apiEvents: ' . $e->getMessage());
+            return response()->json(['error' => 'Error al cargar eventos'], 500);
+        }
     }
 }

@@ -229,28 +229,43 @@ class PaymentController extends Controller
      */
     public function getCalendarEvents(): JsonResponse
     {
-        $payments = Payment::where('user_id', Auth::id())->get();
+        try {
+            $payments = Payment::where('user_id', Auth::id())->get();
 
-        $events = $payments->map(function (Payment $payment) {
-            return [
-                'id' => 'payment_' . $payment->id,
-                'title' => $payment->title,
-                'start' => $payment->due_date ? $payment->due_date->format('Y-m-d') : null,
-                'description' => $payment->description,
-                'backgroundColor' => $payment->status === 'paid' ? '#28a745' : ($payment->status === 'overdue' ? '#dc3545' : '#ffc107'),
-                'borderColor' => $payment->status === 'paid' ? '#28a745' : ($payment->status === 'overdue' ? '#dc3545' : '#ffc107'),
-                'textColor' => '#ffffff',
-                'extendedProps' => [
-                    'type' => 'payment',
-                    'status' => $payment->status,
-                    'amount' => $payment->amount,
-                    'category' => $payment->category_text,
-                    'description' => $payment->description,
-                    'url' => route('payments.show', $payment)
-                ]
-            ];
-        });
+            $events = $payments->map(function (Payment $payment) {
+                try {
+                    // Validar que due_date existe y es válido
+                    if (!$payment->due_date) {
+                        return null;
+                    }
 
-        return response()->json($events);
+                    return [
+                        'id' => 'payment_' . $payment->id,
+                        'title' => $payment->title,
+                        'start' => $payment->due_date->format('Y-m-d'),
+                        'description' => $payment->description,
+                        'backgroundColor' => $payment->status === 'paid' ? '#28a745' : ($payment->status === 'overdue' ? '#dc3545' : '#ffc107'),
+                        'borderColor' => $payment->status === 'paid' ? '#28a745' : ($payment->status === 'overdue' ? '#dc3545' : '#ffc107'),
+                        'textColor' => '#ffffff',
+                        'extendedProps' => [
+                            'type' => 'payment',
+                            'status' => $payment->status,
+                            'amount' => $payment->amount,
+                            'category' => $payment->category_text,
+                            'description' => $payment->description,
+                            'url' => route('payments.show', $payment)
+                        ]
+                    ];
+                } catch (\Exception $e) {
+                    \Log::warning('Error procesando pago ' . $payment->id . ': ' . $e->getMessage());
+                    return null;
+                }
+            })->filter(); // Eliminar nulls
+
+            return response()->json($events->values());
+        } catch (\Exception $e) {
+            \Log::error('Error en getCalendarEvents: ' . $e->getMessage());
+            return response()->json(['error' => 'Error al cargar pagos'], 500);
+        }
     }
 }

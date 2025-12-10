@@ -1,8 +1,7 @@
-// Importar CSS primero
-import '@fullcalendar/daygrid/main.css';
-import '@fullcalendar/timegrid/main.css';
+// Importar CSS de FullCalendar
+import '../css/fullcalendar.css';
 
-// Importar core de FullCalendar ANTES que los plugins
+// Importar core de FullCalendar PRIMERO
 import { Calendar } from '@fullcalendar/core';
 import esLocale from '@fullcalendar/core/locales/es';
 
